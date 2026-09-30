@@ -1,7 +1,7 @@
-name: Deploy
+name: Deploy ElevenLabs
 
-# Every merge to main ships: ElevenLabs first (agent + knowledge base), then the site,
-# so the site never shows a listing the agent doesn't know about yet.
+# Every merge to main syncs ElevenLabs (agent + knowledge base) for each tenant.
+# The site itself is built by Netlify's Git integration on the same push (and previewed on PRs).
 on:
   push:
     branches: [main]
@@ -43,32 +43,3 @@ jobs:
             uv run leaseline deploy --tenant "$slug" $flag | tee -a "$GITHUB_STEP_SUMMARY"
             echo "::endgroup::"
           done
-
-  site:
-    name: Deploy site to Netlify
-    needs: elevenlabs
-    runs-on: ubuntu-latest
-    environment: production
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
-        with:
-          enable-cache: true
-      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
-        with:
-          node-version: 22
-          cache: npm
-          cache-dependency-path: web/package-lock.json
-      - run: uv sync --locked
-      - run: npm ci
-        working-directory: web
-      - name: Build and deploy (netlify.toml drives the build)
-        env:
-          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-          NETLIFY_SITE_ID: ${{ vars.NETLIFY_SITE_ID }}
-        run: |
-          npx --yes netlify-cli@27 deploy --build --prod \
-            --message "Deploy ${GITHUB_SHA::7} from main" \
-            | tee -a "$GITHUB_STEP_SUMMARY"
