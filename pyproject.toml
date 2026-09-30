@@ -35,6 +35,9 @@ target-version = "py312"
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
 
+[tool.ruff.lint.isort]
+known-first-party = ["leaseline", "fake_elevenlabs"]
+
 [tool.ruff.lint.flake8-bugbear]
 # Typer declares CLI options as argument defaults.
 extend-immutable-calls = ["typer.Option", "typer.Argument"]
@@ -42,3 +45,4 @@ extend-immutable-calls = ["typer.Option", "typer.Argument"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-ra"
+pythonpath = ["tests"]

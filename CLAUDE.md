@@ -15,6 +15,15 @@ AI voice leasing assistant ("Steve") on ElevenLabs Agents. The design and roadma
 - `uv run leaseline --help`: CLI
 - `uv run leaseline validate -t demo`: check listings
 - `uv run leaseline render -t demo`: write the prompt, KB docs and tools to `build/demo/` for review
+- `uv run leaseline deploy -t demo --dry-run`: show what would change on ElevenLabs (drop `--dry-run` to apply)
+
+## ElevenLabs API notes (learned the hard way)
+- System tools (e.g. `end_call`) go in `prompt.tools` with `type: system`; `built_in_tools` is
+  silently ignored.
+- Inline client tools are converted into workspace tools (`tool_ids`) and reused by name on
+  update. They don't duplicate.
+- Validate payloads offline with the SDK models (`ConversationalConfig`,
+  `AgentPlatformSettingsRequestModel`); see `tests/test_payload.py`.
 
 ## Rules
 - Listing facts come only from the source listing or the user. Unknown → `TBD`, never guessed.

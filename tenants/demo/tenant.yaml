@@ -1,6 +1,6 @@
 # LeaseLine demo tenant. Steve works for "the leasing team", with no realtor branding.
 slug: demo
-agent_id: null # written once by the first `leaseline deploy`, then committed (it's public)
+agent_id: agent_2801m3svx7v2fz8sc70agxh2ts8q # written once by the first `leaseline deploy`, then committed (it's public)
 
 team:
   name: the leasing team

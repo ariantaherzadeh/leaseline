@@ -1,10 +1,13 @@
 """Command-line interface: `leaseline <command> --tenant <slug>`."""
 
+import os
 from pathlib import Path
 
 import typer
+from dotenv import load_dotenv
 
 from leaseline import __version__
+from leaseline.deploy import DeployError, apply_plan, check_plan, make_plan, record_agent_id
 from leaseline.loader import ValidationReport, validate_tenant
 from leaseline.render import AGENT_DIR, render_agent, write_build
 
@@ -78,3 +81,54 @@ def render(
         fg=typer.colors.GREEN,
         bold=True,
     )
+
+
+def _client():  # pragma: no cover - thin wrapper around the SDK
+    from elevenlabs import ElevenLabs
+
+    load_dotenv()
+    api_key = os.environ.get("ELEVENLABS_API_KEY")
+    if not api_key:
+        typer.secho(
+            "ELEVENLABS_API_KEY is not set (add it to .env; see .env.example)",
+            fg=typer.colors.RED,
+            err=True,
+        )
+        raise typer.Exit(code=2)
+    return ElevenLabs(api_key=api_key)
+
+
+@app.command()
+def deploy(
+    tenant: str = TenantOption,
+    root: Path = RootOption,
+    agent_dir: Path = AgentDirOption,
+    dry_run: bool = typer.Option(
+        False, "--dry-run", help="Show the plan without changing anything."
+    ),
+    allow_mass_delete: bool = typer.Option(
+        False, "--allow-mass-delete", help="Allow removing more than half of the listings."
+    ),
+) -> None:
+    """Sync a tenant's agent and knowledge base to ElevenLabs so they match the repo."""
+    report = _load_or_exit(tenant, root)
+    assert report.tenant is not None
+    rendered = render_agent(report.tenant, report.listings, agent_dir)
+    client = _client()
+
+    plan = make_plan(client, report.tenant, rendered)
+    for line in plan.summary():
+        typer.echo(f"  {line}")
+    try:
+        check_plan(plan, allow_mass_delete=allow_mass_delete)
+    except DeployError as e:
+        typer.secho(f"✗ {e}", fg=typer.colors.RED, bold=True, err=True)
+        raise typer.Exit(code=1) from e
+    if dry_run or not plan.has_changes:
+        typer.secho("✓ dry run, nothing changed" if dry_run else "✓ up to date", bold=True)
+        return
+
+    agent_id = apply_plan(client, plan, rendered)
+    if record_agent_id(root / tenant / "tenant.yaml", agent_id):
+        typer.secho(f"  wrote agent_id to {root / tenant / 'tenant.yaml'}; commit it", bold=True)
+    typer.secho(f"✓ deployed {tenant} → agent {agent_id}", fg=typer.colors.GREEN, bold=True)
