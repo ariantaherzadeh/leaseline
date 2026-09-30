@@ -1,0 +1,21 @@
+# LeaseLine demo tenant. Steve works for "the leasing team", with no realtor branding.
+slug: demo
+agent_id: null # written once by the first `leaseline deploy`, then committed (it's public)
+
+team:
+  name: the leasing team
+  city: Ottawa
+
+persona:
+  name: Steve
+  voice_id: cjVigY5qzO86Huf0OWal # ElevenLabs premade "Eric - Smooth, Trustworthy" (American)
+
+brand:
+  accent: "#0E7C66"
+  co_brand: null
+
+domains:
+  - leaseline.netlify.app
+  - localhost
+
+follow_up: Someone from the leasing team will reach out within one business day.
