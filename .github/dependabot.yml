@@ -18,3 +18,12 @@ updates:
     groups:
       web:
         patterns: ["*"]
+    ignore:
+      # Majors that need the rest of the toolchain to catch up (typescript-eslint, eslint-config-next).
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "eslint"
+        update-types: ["version-update:semver-major"]
+      # Types track the Node version the site runs on (22), not the latest Node.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
