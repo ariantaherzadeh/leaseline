@@ -14,6 +14,7 @@ export type Listing = {
 };
 
 export type Site = {
+  siteUrl: string;
   agentId: string;
   persona: { name: string };
   team: { name: string; city: string };

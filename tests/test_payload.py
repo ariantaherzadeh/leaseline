@@ -31,6 +31,8 @@ def test_agent_is_public_but_domain_locked(payloads: tuple[dict, dict]) -> None:
     _, platform = payloads
     assert platform["auth"]["enable_auth"] is False
     assert platform["auth"]["allowlist"] == [
+        {"hostname": "tryleaseline.com"},
+        {"hostname": "www.tryleaseline.com"},
         {"hostname": "leaseline.netlify.app"},
         {"hostname": "localhost"},
     ]
