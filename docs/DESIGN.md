@@ -52,7 +52,7 @@ leaseline/
 ├── .github/
 │   ├── workflows/
 │   │   ├── ci.yml               # on PR: lint, test, validate listings, web build; deploy plan (dry run)
-│   │   └── deploy.yml           # on push to main: sync ElevenLabs, then deploy the site to Netlify
+│   │   └── deploy.yml           # on push to main: sync ElevenLabs (Netlify builds the site itself)
 │   └── PULL_REQUEST_TEMPLATE.md # "new listing" checklist
 ├── agent/                       # shared across all tenants (the "product")
 │   ├── prompt.md.j2             # system prompt template (Jinja)
