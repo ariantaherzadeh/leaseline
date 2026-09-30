@@ -17,6 +17,19 @@ from verified listing data, and books a showing with the leasing team.
 - **No backend.** A static site on Netlify embeds the ElevenLabs widget; the agent is locked to the
   site's domain.
 
+## Development
+
+Requires [uv](https://docs.astral.sh/uv/).
+
+```bash
+uv sync                      # install
+cp .env.example .env         # add your ElevenLabs API key
+uv run leaseline --help      # CLI
+uv run pytest                # tests
+```
+
+Contributions go through pull requests. See [CLAUDE.md](CLAUDE.md) for conventions.
+
 ## License
 
 [MIT](LICENSE)
