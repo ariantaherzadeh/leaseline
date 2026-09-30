@@ -18,6 +18,8 @@ const body = Atkinson_Hyperlegible({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(site.siteUrl),
+  alternates: { canonical: "/" },
   title: `LeaseLine: talk to ${site.persona.name} about homes for rent in ${site.team.city}`,
   description: `${site.persona.name} is an AI leasing assistant who matches you with a rental home and books a showing.`,
 };

@@ -58,6 +58,7 @@ def site_data(tenant: Tenant, listings: list[Listing]) -> dict[str, Any]:
     if not tenant.agent_id:
         raise SiteError(f"{tenant.slug} has no agent_id yet; run `leaseline deploy` first")
     return {
+        "siteUrl": f"https://{tenant.domains[0]}",
         "agentId": tenant.agent_id,
         "persona": {"name": tenant.persona.name},
         "team": {"name": tenant.team.name, "city": tenant.team.city},
