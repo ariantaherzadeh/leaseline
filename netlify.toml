@@ -24,3 +24,7 @@
   [headers.values]
     X-Robots-Tag = "noindex"
     Cache-Control = "no-store"
+
+# Netlify's Next.js runtime: serverless functions for /team and /api, prerendered pages on the CDN.
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
