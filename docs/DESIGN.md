@@ -51,8 +51,8 @@ leaseline/
 ├── netlify.toml                 # build command + publish dir, security headers
 ├── .github/
 │   ├── workflows/
-│   │   ├── pr-check.yml         # on PR: validate, pytest, deploy --dry-run → plan posted as PR comment
-│   │   └── deploy.yml           # on push to main: deploy to ElevenLabs → run agent tests
+│   │   ├── ci.yml               # on PR: lint, test, validate listings, web build; deploy plan (dry run)
+│   │   └── deploy.yml           # on push to main: sync ElevenLabs, then deploy the site to Netlify
 │   └── PULL_REQUEST_TEMPLATE.md # "new listing" checklist
 ├── agent/                       # shared across all tenants (the "product")
 │   ├── prompt.md.j2             # system prompt template (Jinja)
@@ -236,12 +236,13 @@ GitHub. There is no dashboard or form.
 1. Copy `tenants/_template/listings/_listing-template.md` to `tenants/demo/listings/<id>.md` and
    fill it in (optionally drop photos in `tenants/demo/photos/`).
 2. Open a PR (or push to `main` directly for a quick change).
-3. **PR check** (`pr-check.yml`) validates the file, runs pytest, and posts the deploy plan as a
-   PR comment, e.g. `+ add listing kanata-12-main · agent: knowledge base 2 → 3 docs`.
-4. **Merge to main** → two things happen in parallel:
-   - `deploy.yml` (GitHub Actions) syncs ElevenLabs: uploads the new KB doc, attaches it to the
-     agent, then runs the agent scenario tests. It uses the `ELEVENLABS_API_KEY` repository secret.
-   - Netlify rebuilds the site from the same commit, so the new card appears.
+3. **PR checks** (`ci.yml`) validate the file, run the tests and build the site. A **Deploy plan**
+   job does a dry run and shows the result in the job summary, e.g. `+ add listing kanata-12-main`.
+4. **Merge to main** → `deploy.yml` runs two jobs in order:
+   - **Sync ElevenLabs:** `leaseline deploy` for every tenant uploads the new KB doc and attaches
+     it to the agent (`ELEVENLABS_API_KEY` repository secret).
+   - **Deploy site:** builds with `netlify.toml` and publishes to production, so the new card
+     appears. It runs after the sync, so the page never shows a home the agent doesn't know.
 5. Live in about 1–2 minutes. Editing a file updates that listing; deleting a file removes it
    from both the agent and the site.
 
@@ -259,12 +260,17 @@ GitHub. There is no dashboard or form.
   `tenant.yaml`. The id is public anyway: it's in the page HTML.
 - **Guard rails in CI.** Deploy refuses to run if validation fails. It also refuses to remove more
   than half the listings in one go unless the commit message contains `[allow-mass-delete]`.
-- **Concurrency.** `deploy.yml` uses a GitHub `concurrency` group so two pushes never sync at once.
+- **Concurrency.** `deploy.yml` uses a GitHub `concurrency` group so two pushes never sync at once;
+  a second merge queues behind the first instead of cancelling it.
+- **Branch protection.** `main` only accepts squash-merged PRs with Lint, Test, Validate listings
+  and Web passing and the branch up to date; admins included, no force-pushes or deletion.
 - **Prompt and config changes** (`agent/**`, `tenant.yaml`) go through the same pipeline.
 
 ### Netlify
-- Connected to the GitHub repo; base directory `web/`, using Netlify's Next.js runtime. The build
-  runs `leaseline export-site` (needs Python + uv), then `next build`.
+- Project `leaseline` (https://leaseline.netlify.app). Deployed by `deploy.yml` with the Netlify
+  CLI (`deploy --build --prod`), so the pipeline lives in the repo and runs after the ElevenLabs
+  sync. `netlify.toml` sets `base = "web"` and the `@netlify/plugin-nextjs` runtime; the build runs
+  `leaseline export-site` (Python + uv), then `next build`.
 - One environment variable: `ELEVENLABS_API_KEY`, used only by the team view's API route.
 - Deploy previews on PRs show the new card before merge.
 - Domain `leaseline.netlify.app` (may change later). It's in the agent allowlist, along with
@@ -275,8 +281,8 @@ GitHub. There is no dashboard or form.
 | Where | Secret |
 |---|---|
 | Local | `.env` (gitignored) |
-| GitHub Actions | `ELEVENLABS_API_KEY` repository secret, restricted to the Agents permissions |
-| Netlify | `ELEVENLABS_API_KEY` (server-side only, for `/api/conversations/[id]`) |
+| GitHub Actions | `ELEVENLABS_API_KEY` and `NETLIFY_AUTH_TOKEN` repository secrets; `NETLIFY_SITE_ID` variable |
+| Netlify | `ELEVENLABS_API_KEY`, ideally a read-only key (server-side only, for `/api/conversations/[id]`) |
 
 ## 10. Demo video (outline, full script in docs/demo-script.md)
 

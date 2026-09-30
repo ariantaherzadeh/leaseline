@@ -1,0 +1,74 @@
+name: Deploy
+
+# Every merge to main ships: ElevenLabs first (agent + knowledge base), then the site,
+# so the site never shows a listing the agent doesn't know about yet.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Never run two deploys at once; queue them instead of cancelling a half-finished sync.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  elevenlabs:
+    name: Sync ElevenLabs
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          enable-cache: true
+      - run: uv sync --locked
+      - name: Deploy every tenant
+        env:
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
+          # Removing more than half of a tenant's listings needs an explicit opt-in.
+          ALLOW_MASS_DELETE: ${{ contains(github.event.head_commit.message, '[allow-mass-delete]') }}
+        run: |
+          flag=""
+          [[ "$ALLOW_MASS_DELETE" == "true" ]] && flag="--allow-mass-delete"
+          for dir in tenants/*/; do
+            slug=$(basename "$dir")
+            [[ "$slug" == _* ]] && continue
+            echo "::group::$slug"
+            uv run leaseline deploy --tenant "$slug" $flag | tee -a "$GITHUB_STEP_SUMMARY"
+            echo "::endgroup::"
+          done
+
+  site:
+    name: Deploy site to Netlify
+    needs: elevenlabs
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@c18668ad3cf93ea998bef934396af7bb5c839dc7 # v10.2.0
+        with:
+          enable-cache: true
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: uv sync --locked
+      - run: npm ci
+        working-directory: web
+      - name: Build and deploy (netlify.toml drives the build)
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ vars.NETLIFY_SITE_ID }}
+        run: |
+          npx --yes netlify-cli@27 deploy --build --prod \
+            --message "Deploy ${GITHUB_SHA::7} from main" \
+            | tee -a "$GITHUB_STEP_SUMMARY"
