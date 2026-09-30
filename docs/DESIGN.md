@@ -93,7 +93,7 @@ agent_id: null   # written once by the first deploy, then committed
 team:      { name: "the leasing team", city: Ottawa }   # who Nora refers to; optional realtor name
 persona:   { name: Nora, voice_id: hpp4J3VqNfWAUOO0d1Us }             # product default; a tenant may override
 brand:     { accent: "#…", logo: assets/… }            # LeaseLine look; optional co-brand line
-domains:   [leaseline.netlify.app, localhost]
+domains:   [tryleaseline.com, www.tryleaseline.com, leaseline.netlify.app, localhost]  # first = primary
 follow_up: "Someone from the leasing team will reach out within one business day"
 ```
 
@@ -267,14 +267,14 @@ GitHub. There is no dashboard or form.
 - **Prompt and config changes** (`agent/**`, `tenant.yaml`) go through the same pipeline.
 
 ### Netlify
-- Project `leaseline` (https://leaseline.netlify.app). Deployed by `deploy.yml` with the Netlify
+- Project `leaseline`, live at **https://tryleaseline.com** (also https://leaseline.netlify.app). Deployed by `deploy.yml` with the Netlify
   CLI (`deploy --build --prod`), so the pipeline lives in the repo and runs after the ElevenLabs
   sync. `netlify.toml` sets `base = "web"` and the `@netlify/plugin-nextjs` runtime; the build runs
   `leaseline export-site` (Python + uv), then `next build`.
 - One environment variable: `ELEVENLABS_API_KEY`, used only by the team view's API route.
 - Deploy previews on PRs show the new card before merge.
-- Domain `leaseline.netlify.app` (may change later). It's in the agent allowlist, along with
-  `localhost` for development.
+- Primary domain `tryleaseline.com` (`www` redirects to it). The agent allowlist has both, plus
+  `leaseline.netlify.app` and `localhost` for development.
 - `netlify.toml`: security headers, and a `Permissions-Policy` allowing the microphone.
 
 ### Secrets
@@ -338,5 +338,5 @@ view, amenities, A/C and a concierge.
    says they need confirming with the leasing team.
 
 Resolved: no fictional third listing · persona **Nora**, voice **Bella** · real addresses OK to
-publish · domain `leaseline.netlify.app` (may change later) · Gladstone $2,695, 700 sq ft ·
+publish · domain `tryleaseline.com` · Gladstone $2,695, 700 sq ft ·
 listings are managed only by pushing to GitHub (§9).

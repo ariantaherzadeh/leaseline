@@ -25,6 +25,7 @@ def test_site_data_has_what_the_page_needs(demo) -> None:
     tenant, listings = demo
     data = site_data(tenant, listings)
     assert data["agentId"] == tenant.agent_id
+    assert data["siteUrl"] == "https://tryleaseline.com"
     assert data["persona"] == {"name": "Nora"}
     assert [listing["id"] for listing in data["listings"]] == [
         "gladstone-920-1",

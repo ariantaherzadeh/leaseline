@@ -14,7 +14,7 @@ brand:
   accent: "#0E7C66"
   co_brand: null # optional text line, e.g. "for Jane Doe, REALTOR®"; never a logo
 
-domains: # bare hostnames allowed to embed the agent
+domains: # bare hostnames allowed to embed the agent; the first is the primary domain
   - your-site.netlify.app
   - localhost
 

@@ -14,7 +14,9 @@ brand:
   accent: "#0E7C66"
   co_brand: null
 
-domains:
+domains: # first entry is the primary (canonical) domain
+  - tryleaseline.com
+  - www.tryleaseline.com
   - leaseline.netlify.app
   - localhost
 
