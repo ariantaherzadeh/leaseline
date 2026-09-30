@@ -20,21 +20,23 @@ export function ListingCard({ listing, personaName, active, ref }: Props) {
       aria-current={active ? "true" : undefined}
     >
       <p className="tag" aria-hidden="true">
-        {personaName} is talking about this home
+        {personaName} is presenting this residence
       </p>
-      <div className="listing-head">
-        <p className="rent">
-          <span className="rent-amount">{listing.rent}</span> a month
-        </p>
-        <p className="beds">{listing.layout}</p>
+      <div className="listing-intro">
+        <p className="hood">{listing.neighbourhood}</p>
+        <h3 id={titleId}>{listing.title}</h3>
+        <div className="listing-head">
+          <p className="rent">
+            <span className="rent-amount">{listing.rent}</span> per month
+          </p>
+          <p className="beds">{listing.layout}</p>
+        </div>
+        <ul className="highlights">
+          {listing.highlights.map((h) => (
+            <li key={h}>{h}</li>
+          ))}
+        </ul>
       </div>
-      <h3 id={titleId}>{listing.title}</h3>
-      <p className="hood">{listing.neighbourhood}</p>
-      <ul className="highlights">
-        {listing.highlights.map((h) => (
-          <li key={h}>{h}</li>
-        ))}
-      </ul>
       <dl className="facts">
         {listing.facts.map((f) => (
           <div key={f.label}>

@@ -195,9 +195,14 @@ Simulated-caller scenarios in `tests/agent_scenarios.yaml`:
 - **Look:** LeaseLine product brand only; Nora is the face of it. No realtor or brokerage
   branding in the demo tenant. A tenant *can* add a text co-brand line ("for Jane Doe,
   REALTOR®"), but never another company's logo.
-- **Layout:** on desktop, a left panel that stays put (intro, **Talk to Nora**, how a call
-  goes) with the homes on the right, all above the fold. On mobile it stacks, with the homes
-  before "how it works".
+- **Direction: a private leasing office on Wellington Street.** Palette from Ottawa's
+  architecture: midnight ink, limestone, porcelain, verdigris (the Parliament roofs), and one
+  metal, **brushed brass**, reserved for "Nora is presenting this residence". Type: Bodoni Moda
+  (headings, prices) with Jost. Square edges, no drop shadows, no pill buttons.
+- **Layout:** on desktop, a dark concierge desk that stays put (intro, **Speak with Nora**, how
+  it works) with the residences on porcelain to the right, laid out as two-column brochure
+  entries so both fit above the fold. On mobile the desk stacks above the residences and "how
+  it works" follows them.
 - **Voice:** ElevenLabs' embed widget (`<elevenlabs-convai>`) in the corner holds the call and
   its transcript. Its copy and colours come from the agent's `platform_settings.widget`, set by
   `deploy`. The intro button opens the same widget.

@@ -1,28 +1,26 @@
-/* LeaseLine: Nora's front desk.
-   One loud moment: the amber key tag + glow on the home Nora is talking about.
-   Everything else stays quiet. */
+/* LeaseLine: a private leasing office on Wellington Street.
+   Palette from Ottawa's own architecture (limestone, weathered copper, midnight) with one
+   metal: brushed brass, like door hardware and keys. Brass is the only loud thing on the
+   page: it marks the residence Nora is presenting. */
 
 :root {
-  --fog: #e9efec;       /* page: cool canal fog */
-  --paper: #fbfcfb;     /* card surface */
-  --ink: #15261f;       /* text: deep spruce */
-  --muted: #56655f;
-  --line: #cfd9d4;
-  --brand: #0e7c66;     /* overridden per tenant on <html> */
-  --key: #f2b233;       /* key-tag amber: "Nora is talking about this" */
-  --key-ink: #3d2a00;
-  --danger: #a3261b;
+  --ink: #16202b;          /* midnight: the concierge desk, primary text */
+  --limestone: #e6e1d6;    /* text on ink; quiet surfaces */
+  --porcelain: #f5f5f2;    /* page */
+  --paper: #ffffff;        /* residence entries */
+  --verdigris: #4f7d70;    /* weathered copper: small accents */
+  --brass: #b08d57;        /* the highlight */
+  --brass-deep: #8a6c3c;
+  --muted: #6b6a66;
+  --rule: #d9d5cc;
+  --danger: #9b2c22;
+  --brand: #16202b;        /* overridden per tenant on <html> */
 
-  --display: var(--font-display), "Avenir Next", system-ui, sans-serif;
-  --body: var(--font-body), system-ui, sans-serif;
+  --display: var(--font-display), "Didot", "Bodoni 72", Georgia, serif;
+  --body: var(--font-body), "Futura", "Avenir Next", system-ui, sans-serif;
 
-  --step-0: 1.0625rem;
-  --step-1: 1.3rem;
-  --step-2: 1.75rem;
-  --step-3: clamp(2.4rem, 6vw, 4.6rem);
-
-  --gutter: clamp(16px, 5vw, 64px);
-  --measure: 38rem;
+  --gutter: clamp(20px, 5vw, 72px);
+  --measure: 34rem;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -31,45 +29,49 @@ html { color-scheme: light; }
 
 body {
   margin: 0;
-  background: var(--fog);
+  background: var(--porcelain);
   color: var(--ink);
-  font: 400 var(--step-0)/1.6 var(--body);
+  font: 300 1.0625rem/1.65 var(--body);
   -webkit-font-smoothing: antialiased;
 }
 
-h1, h2, h3 { font-family: var(--display); font-weight: 700; line-height: 1.1; margin: 0; }
+h1, h2, h3 { font-family: var(--display); font-weight: 400; margin: 0; }
 p { margin: 0; }
 a { color: inherit; }
+strong { font-weight: 500; }
 
-:focus-visible { outline: 3px solid var(--brand); outline-offset: 3px; border-radius: 4px; }
+:focus-visible { outline: 2px solid var(--brass); outline-offset: 3px; }
 
 .skip {
-  position: absolute; left: var(--gutter); top: -3rem;
-  background: var(--ink); color: var(--paper); padding: .5rem .9rem; border-radius: 6px;
+  position: absolute; left: var(--gutter); top: -3rem; z-index: 20;
+  background: var(--ink); color: var(--limestone); padding: .5rem .9rem;
 }
 .skip:focus { top: 1rem; }
 
 /* ---- layout: the desk ----
-   Mobile: one column; the call bar pins to the bottom of the screen during a call.
-   Desktop: a left panel (intro + call) that stays put, homes on the right, all above the fold. */
+   Desktop: the concierge desk (ink) stays put on the left; residences on porcelain to the right.
+   Mobile: the desk stacks above the residences; "how it works" moves below them. */
 .desk { display: grid; }
 
-/* Mobile: flatten the panel so "how it works" can follow the homes instead of pushing them
-   down. Order: masthead, intro, call, homes, then how it works. */
+.panel { background: var(--ink); color: var(--limestone); }
+
+/* "How it works" renders in two places; only one is displayed (display:none also hides the
+   other from screen readers). */
+.steps-after-homes { display: none; }
 @media (max-width: 1023.98px) {
-  .panel { display: contents; }
-  .panel > * { margin-inline: var(--gutter); }
-  .masthead { order: 1; margin-top: 1.25rem; }
-  .panel h1 { order: 2; }
-  .lede { order: 3; }
-  .cta-row, .team-link { order: 4; }
-  .homes { order: 5; padding: 2.25rem var(--gutter) 1rem; }
-  .steps { order: 6; margin-bottom: 2rem; }
+  .panel { padding: 1.5rem var(--gutter) 2.75rem; }
+  .panel h1 { margin-top: 2.5rem; }
+  .steps-in-panel { display: none; }
+  .steps-after-homes { display: block; background: var(--ink); color: var(--limestone); padding: 2.5rem var(--gutter); }
+  .homes { padding: 2.5rem var(--gutter) 2rem; }
+}
+@media (min-width: 1024px) {
+  .steps-in-panel { margin-top: auto; }
 }
 
 @media (min-width: 1024px) {
   .desk {
-    grid-template-columns: minmax(24rem, 34rem) minmax(0, 1fr);
+    grid-template-columns: minmax(26rem, 36rem) minmax(0, 1fr);
     align-items: start;
     min-height: 100vh;
   }
@@ -77,195 +79,211 @@ a { color: inherit; }
     position: sticky; top: 0;
     min-height: 100vh;
     display: flex; flex-direction: column;
-    padding: 2rem clamp(2rem, 3vw, 3rem) 2rem var(--gutter);
-    border-right: 1px solid var(--line);
+    padding: 2.25rem clamp(2.5rem, 3.5vw, 3.75rem) 2.25rem var(--gutter);
   }
-  .homes { padding: 5.25rem var(--gutter) 3rem clamp(2rem, 3vw, 3rem); }
+  .panel h1 { margin-top: clamp(2.5rem, 9vh, 5.5rem); }
+  .homes { padding: 2.25rem var(--gutter) 3rem clamp(2.5rem, 3.5vw, 3.75rem); }
 }
 
 /* ---- masthead ---- */
 .masthead { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
 .wordmark {
-  display: inline-flex; align-items: center; gap: .55rem;
-  font: 800 1.35rem/1 var(--display); letter-spacing: -.02em; text-decoration: none;
+  display: inline-flex; align-items: center; gap: .6rem;
+  font: 500 1.4rem/1 var(--display); letter-spacing: .01em; text-decoration: none;
+  color: var(--limestone);
 }
-.wordmark svg { width: 1.9rem; height: 1.9rem; fill: none; stroke: var(--brand); stroke-width: 3; stroke-linecap: round; }
-.co-brand { color: var(--muted); font-size: .95rem; }
+.wordmark svg { width: 1.8rem; height: 1.8rem; fill: none; stroke: var(--brass); stroke-width: 2.2; }
+.co-brand { color: color-mix(in srgb, var(--limestone) 70%, transparent); font-size: .9rem; }
 
-/* ---- intro + call ---- */
+/* ---- the desk: intro + call ---- */
 .panel h1 {
-  margin-top: clamp(1.75rem, 5vh, 3.5rem);
-  font-size: clamp(2.1rem, 3.4vw + .8rem, 3.4rem);
-  font-weight: 800;
-  letter-spacing: -.035em;
-  max-width: 14ch;
+  font-size: clamp(2.6rem, 3.6vw + .6rem, 4rem);
+  line-height: 1.05;
+  letter-spacing: -.01em;
+  max-width: 12ch;
   text-wrap: balance;
+  color: #fbfaf7;
 }
 .lede {
-  margin-top: 1rem;
+  margin-top: 1.5rem;
   max-width: var(--measure);
-  font-size: 1.125rem;
-  line-height: 1.55;
-  color: var(--muted);
+  font-size: 1.1rem;
+  line-height: 1.7;
+  color: color-mix(in srgb, var(--limestone) 82%, transparent);
 }
-.cta-row { margin-top: 1.75rem; display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1.25rem; }
+.cta-row { margin-top: 2.25rem; display: flex; flex-wrap: wrap; align-items: center; gap: .9rem 1.5rem; }
 .cta {
-  display: inline-flex; align-items: center; justify-content: center; gap: .75rem;
-  min-width: 12.5rem;
-  padding: 1rem 1.6rem 1rem 1.25rem;
-  border: 0; border-radius: 999px;
-  background: var(--brand); color: #fff;
-  font: 700 1.15rem/1 var(--display); letter-spacing: -.01em;
+  display: inline-flex; align-items: center; justify-content: center; gap: .8rem;
+  padding: 1.05rem 1.9rem;
+  border: 1px solid var(--brass); border-radius: 2px;
+  background: var(--brass); color: var(--ink);
+  font: 500 1rem/1 var(--body); letter-spacing: .06em;
   cursor: pointer;
-  transition: transform .15s ease, background-color .15s ease;
+  transition: background-color .2s ease, color .2s ease;
 }
-.cta:hover { background: color-mix(in srgb, var(--brand) 85%, black); }
-.cta:active { transform: scale(.98); }
-.cta:disabled { cursor: progress; opacity: .8; }
+.cta:hover { background: transparent; color: var(--brass); }
 .cta-dot {
   flex: none;
-  width: .7rem; height: .7rem; border-radius: 50%; background: var(--key);
-  animation: ring 2.4s ease-out infinite;
+  width: .5rem; height: .5rem; border-radius: 50%; background: currentColor;
+  animation: ring 2.6s ease-out infinite;
 }
 @keyframes ring {
-  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--key) 60%, transparent); }
-  70%, 100% { box-shadow: 0 0 0 .7rem transparent; }
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--ink) 45%, transparent); }
+  70%, 100% { box-shadow: 0 0 0 .6rem transparent; }
 }
-.cta-note { color: var(--muted); font-size: .95rem; }
+.cta-note { color: color-mix(in srgb, var(--limestone) 65%, transparent); font-size: .92rem; }
 
-/* ---- homes ---- */
-.homes-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .25rem 1rem; margin-bottom: 1.25rem; }
-.homes h2 { font-size: var(--step-2); letter-spacing: -.02em; }
-.live-status { color: var(--brand); font-weight: 700; }
+/* ---- how it works (a real sequence, so roman numerals) ---- */
+.steps { border-top: 1px solid color-mix(in srgb, var(--limestone) 18%, transparent); }
+@media (min-width: 1024px) { .steps { margin-top: 2.5rem; padding-top: 1.75rem; } }
+@media (max-width: 1023.98px) { .steps { border-top: 0; } }
+.steps h2 { font: italic 400 1.25rem/1.2 var(--display); color: #fbfaf7; }
+.steps ol { margin: 1rem 0 0; padding: 0; list-style: none; counter-reset: step; display: grid; gap: .85rem; }
+.steps li {
+  counter-increment: step;
+  display: grid; grid-template-columns: 2rem 1fr; column-gap: .5rem;
+  color: color-mix(in srgb, var(--limestone) 72%, transparent); font-size: .95rem; line-height: 1.55;
+}
+.steps li::before {
+  content: counter(step, lower-roman) ".";
+  grid-row: span 2;
+  font: italic 400 1.05rem/1.4 var(--display); color: var(--brass);
+}
+.steps strong { color: var(--limestone); }
+
+/* ---- residences ---- */
+.homes-head {
+  display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .25rem 1.5rem;
+  padding-bottom: 1.1rem; margin-bottom: 1.75rem;
+  border-bottom: 1px solid var(--rule);
+}
+.homes h2 { font-size: clamp(1.6rem, 2vw + .6rem, 2.1rem); }
+.live-status { font: italic 400 1.05rem var(--display); color: var(--brass-deep); }
 
 .listing-grid {
   list-style: none; margin: 0; padding: 0;
-  display: grid; gap: clamp(1rem, 3vw, 2rem);
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+  display: grid; gap: clamp(1.25rem, 2.5vw, 2rem);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 23rem), 1fr));
 }
-.listing-grid > li { display: flex; }
+.listing-grid > li { display: flex; container-type: inline-size; }
 
 .listing {
   position: relative;
-  scroll-margin: 6rem 0 9rem;
   flex: 1;
   background: var(--paper);
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  padding: 1.75rem 1.75rem 1.5rem;
-  transition: border-color .25s ease, box-shadow .35s ease, transform .35s ease, opacity .35s ease;
+  border: 1px solid var(--rule);
+  padding: 2.25rem 2rem 1.75rem;
+  scroll-margin: 6rem 0 9rem;
+  transition: border-color .3s ease, opacity .35s ease, box-shadow .3s ease;
 }
-.listing-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
-.rent { color: var(--muted); }
-.rent-amount {
-  font: 800 clamp(2.2rem, 4.5vw, 2.9rem)/1 var(--display);
-  letter-spacing: -.03em; color: var(--ink);
+.hood { font: italic 400 1.05rem/1.3 var(--display); color: var(--verdigris); }
+.listing h3 { margin-top: .35rem; font-size: clamp(1.45rem, 1.2vw + .9rem, 1.75rem); line-height: 1.15; }
+.listing-head {
+  display: flex; align-items: baseline; justify-content: space-between; gap: .5rem 1rem; flex-wrap: wrap;
+  margin-top: 1.25rem; padding: .9rem 0; border-block: 1px solid var(--rule);
 }
-.beds { font-weight: 700; }
-.listing h3 { margin-top: 1.1rem; font-size: var(--step-1); letter-spacing: -.01em; }
-.hood { color: var(--muted); margin-top: .2rem; }
+.rent { color: var(--muted); font-size: .92rem; }
+.rent-amount { font: 400 2.1rem/1 var(--display); color: var(--ink); margin-right: .3rem; font-variant-numeric: lining-nums; }
+.beds { font-weight: 400; letter-spacing: .02em; }
 
-.highlights { margin: 1.1rem 0 0; padding-left: 1.1rem; }
-.highlights li { margin: .25rem 0; }
-.highlights li::marker { color: var(--brand); }
+.highlights { margin: 1.25rem 0 0; padding: 0; list-style: none; display: grid; gap: .4rem; }
+.highlights li { position: relative; padding-left: 1.4rem; }
+.highlights li::before {
+  content: ""; position: absolute; left: 0; top: .8em;
+  width: .8rem; height: 1px; background: var(--brass);
+}
 
 .facts {
-  margin: 1.4rem 0 0;
-  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: .9rem 1.25rem;
-  padding-top: 1.2rem; border-top: 1px dashed var(--line);
+  margin: 1.5rem 0 0;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem 1.25rem;
 }
-.facts dt { font-size: .85rem; color: var(--muted); }
-.facts dd { margin: 0; font-weight: 700; }
+@media (max-width: 480px) { .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.facts dt { font-size: .8rem; color: var(--muted); letter-spacing: .02em; }
+.facts dd { margin: .1rem 0 0; font-weight: 400; }
 
-/* The key tag: hidden until Nora talks about this home. */
+/* Wide entries read like a brochure spread: the residence on the left, particulars on the right. */
+@container (min-width: 40rem) {
+  .listing {
+    display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    column-gap: clamp(1.75rem, 3cqi, 3rem);
+    padding: 2rem 2.25rem;
+  }
+  .listing .facts {
+    margin: 0; align-content: start;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding-left: clamp(1.75rem, 3cqi, 3rem);
+    border-left: 1px solid var(--rule);
+  }
+}
+
+/* The brass tag: hidden until Nora presents this residence. */
 .tag {
-  position: absolute; top: -.85rem; left: 1.4rem;
-  display: inline-flex; align-items: center; gap: .45rem;
-  padding: .3rem .8rem .3rem .6rem;
-  background: var(--key); color: var(--key-ink);
-  border-radius: 999px;
-  font: 700 .85rem/1.2 var(--body);
-  opacity: 0; transform: translateY(.4rem);
-  transition: opacity .25s ease, transform .25s ease;
+  position: absolute; top: 0; left: 2rem; transform: translateY(-50%);
+  display: inline-flex; align-items: center; gap: .5rem;
+  padding: .35rem .85rem;
+  background: var(--brass); color: var(--ink);
+  font: 500 .8rem/1.2 var(--body); letter-spacing: .04em;
+  opacity: 0;
+  transition: opacity .3s ease;
   pointer-events: none;
 }
 .tag::before {
-  content: ""; width: .5rem; height: .5rem; border-radius: 50%; background: var(--key-ink);
+  content: ""; width: .4rem; height: .4rem; border-radius: 50%; background: var(--ink);
   animation: talk 1s ease-in-out infinite alternate;
 }
-@keyframes talk { from { transform: scale(.6); } to { transform: scale(1.15); } }
+@keyframes talk { from { opacity: .35; } to { opacity: 1; } }
 
-.listing.is-active {
-  border-color: var(--key);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--key) 45%, transparent),
-              0 18px 40px -18px color-mix(in srgb, var(--key-ink) 45%, transparent);
-  transform: translateY(-4px);
-}
-.listing.is-active .tag { opacity: 1; transform: none; }
-.listing-grid.has-active .listing:not(.is-active) { opacity: .62; }
-
-/* ---- how it works (in the panel) ---- */
-.steps { margin-top: 2.25rem; padding-top: 1.5rem; border-top: 1px dashed var(--line); }
-@media (min-width: 1024px) { .steps { margin-top: auto; } }
-.steps h2 { font-size: 1.05rem; letter-spacing: -.01em; }
-.steps ol { margin: .9rem 0 0; padding: 0; list-style: none; counter-reset: step; display: grid; gap: .7rem; }
-.steps li {
-  counter-increment: step;
-  display: grid; grid-template-columns: 1.6rem 1fr; column-gap: .5rem;
-  color: var(--muted); font-size: .98rem; line-height: 1.45;
-}
-.steps li::before {
-  content: counter(step);
-  grid-row: span 2;
-  font: 800 1.25rem/1.15 var(--display); color: var(--brand);
-}
-.steps strong { color: var(--ink); }
+.listing.is-active { border-color: var(--brass); box-shadow: inset 0 0 0 1px var(--brass); }
+.listing.is-active .tag { opacity: 1; }
+.listing-grid.has-active .listing:not(.is-active) { opacity: .5; }
 
 /* ---- showing confirmation ---- */
 .showing {
   position: fixed; left: var(--gutter); bottom: 1.5rem; z-index: 10;
-  width: min(26rem, calc(100vw - 2 * var(--gutter)));
-  background: var(--paper); border: 2px solid var(--brand); border-radius: 18px;
-  padding: 1.4rem 1.5rem;
-  box-shadow: 0 24px 48px -20px color-mix(in srgb, var(--ink) 55%, transparent);
-  animation: arrive .4s cubic-bezier(.2, .8, .2, 1);
+  width: min(27rem, calc(100vw - 2 * var(--gutter)));
+  background: var(--paper); color: var(--ink);
+  border: 1px solid var(--rule); border-top: 3px solid var(--brass);
+  padding: 1.5rem 1.6rem;
+  box-shadow: 0 30px 60px -30px color-mix(in srgb, var(--ink) 55%, transparent);
+  animation: arrive .45s cubic-bezier(.2, .8, .2, 1);
 }
-/* On phones the call widget spans the bottom; sit the confirmation above it. */
-@media (max-width: 640px) { .showing { top: 1rem; bottom: auto; } }
-.showing h2 { font-size: var(--step-1); color: var(--brand); }
-.showing p { margin-top: .5rem; }
+.showing h2 { font-size: 1.5rem; }
+.showing p { margin-top: .55rem; }
 .showing-follow { color: var(--muted); }
 .showing-close {
-  margin-top: 1rem; padding: .5rem 1rem; border-radius: 999px;
-  border: 1px solid var(--line); background: transparent; color: var(--ink);
-  font: 700 .95rem/1 var(--body); cursor: pointer;
+  margin-top: 1.1rem; padding: .55rem 1.1rem; border-radius: 2px;
+  border: 1px solid var(--rule); background: transparent; color: var(--ink);
+  font: 400 .92rem/1 var(--body); letter-spacing: .04em; cursor: pointer;
 }
-@keyframes arrive { from { opacity: 0; transform: translateY(1rem); } }
+@keyframes arrive { from { opacity: 0; transform: translateY(.75rem); } }
+@media (max-width: 640px) { .showing { top: 1rem; bottom: auto; } }
+
+/* ---- link to the leasing team's report (appears once a call is underway) ---- */
+.team-link {
+  margin-top: 1.75rem;
+  max-width: var(--measure);
+  padding: 1.1rem 1.25rem;
+  border: 1px solid color-mix(in srgb, var(--brass) 70%, transparent);
+  animation: arrive .45s cubic-bezier(.2, .8, .2, 1);
+}
+.team-link-title { font: italic 400 1.15rem/1.35 var(--display); color: #fbfaf7; }
+.team-link p + p { margin-top: .35rem; color: color-mix(in srgb, var(--limestone) 72%, transparent); font-size: .95rem; }
+.team-link a {
+  display: inline-block; margin-top: .85rem;
+  color: var(--brass); font-weight: 500; letter-spacing: .04em;
+  text-underline-offset: .3em; text-decoration-thickness: 1px;
+}
+.team-link-inline { display: inline-block; margin-top: .8rem; color: var(--verdigris); font-weight: 500; }
 
 /* ---- footer ---- */
-.footer { padding: 1.5rem var(--gutter) 7rem; /* room for the call widget */ color: var(--muted); font-size: .9rem; border-top: 1px solid var(--line); }
-.footer p { max-width: 60rem; }
+.footer {
+  padding: 1.75rem var(--gutter) 7rem; /* room for the call widget */
+  color: var(--muted); font-size: .88rem;
+  border-top: 1px solid var(--rule);
+}
+.footer p { max-width: 62rem; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
-
-/* ---- link to the leasing team's back office (appears once a call is underway) ---- */
-.team-link {
-  margin-top: 1.25rem;
-  max-width: var(--measure);
-  padding: 1rem 1.1rem;
-  background: var(--ink); color: var(--fog);
-  border-radius: 14px;
-  animation: arrive .4s cubic-bezier(.2, .8, .2, 1);
-}
-.team-link-title { font: 700 1.05rem/1.3 var(--display); color: var(--key); }
-.team-link p + p { margin-top: .3rem; color: color-mix(in srgb, var(--fog) 80%, transparent); font-size: .95rem; }
-.team-link a {
-  display: inline-block; margin-top: .75rem;
-  padding: .55rem 1rem; border-radius: 999px;
-  background: var(--key); color: var(--key-ink);
-  font-weight: 700; text-decoration: none;
-}
-.team-link-inline { display: inline-block; margin-top: .75rem; color: var(--brand); font-weight: 700; }

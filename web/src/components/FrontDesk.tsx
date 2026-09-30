@@ -75,28 +75,26 @@ export function FrontDesk({ site, masthead, howItWorks }: FrontDeskProps) {
     <div className="desk">
       <section className="panel" aria-labelledby="hero-title">
         {masthead}
-        <h1 id="hero-title">
-          Tell {persona.name} what you need. Get matched with the home that fits.
-        </h1>
+        <h1 id="hero-title">Tell {persona.name} how you want to live.</h1>
         <p className="lede">
-          {persona.name} is an AI leasing assistant. Talk through your budget, parking, pets and
-          move-in date out loud, and {persona.name} recommends a home, answers questions, and books
-          a showing with {site.team.name}.
+          {persona.name} is an AI leasing assistant for {site.team.name}. Describe your budget, your
+          move-in date, the car, the dog, the view you&rsquo;re hoping for. {persona.name} will suggest
+          the residence that suits you, answer your questions, and arrange a private showing.
         </p>
         <div className="cta-row">
           <button className="cta" type="button" onClick={startWidgetCall}>
             <span className="cta-dot" aria-hidden="true" />
-            Talk to {persona.name}
+            Speak with {persona.name}
           </button>
-          <p className="cta-note">Uses your microphone. Calls last up to five minutes.</p>
+          <p className="cta-note">A voice conversation in your browser, up to five minutes.</p>
         </div>
-        {conversationId && <TeamLink conversationId={conversationId} />}
-        {howItWorks}
+        {conversationId && <TeamLink conversationId={conversationId} teamName={site.team.name} />}
+        <div className="steps-in-panel">{howItWorks}</div>
       </section>
 
       <section className="homes" id="homes" aria-labelledby="homes-title">
         <div className="homes-head">
-          <h2 id="homes-title">Available now in {site.team.city}</h2>
+          <h2 id="homes-title">Residences available in {site.team.city}</h2>
           <p className="live-status" role="status" aria-live="polite">
             {active ? `Now discussing: ${active.title}` : ""}
           </p>
@@ -115,6 +113,9 @@ export function FrontDesk({ site, masthead, howItWorks }: FrontDeskProps) {
         </ul>
       </section>
 
+      {/* On small screens "how it works" follows the residences instead of pushing them down. */}
+      <div className="steps-after-homes">{howItWorks}</div>
+
       {showing && (
         <aside className="showing" aria-live="assertive" aria-labelledby="showing-title">
           <h2 id="showing-title">Showing requested</h2>
@@ -123,7 +124,7 @@ export function FrontDesk({ site, masthead, howItWorks }: FrontDeskProps) {
             {showing.contact}.
           </p>
           <p className="showing-follow">{site.followUp}</p>
-          <TeamLink conversationId={conversationId} compact />
+          <TeamLink conversationId={conversationId} teamName={site.team.name} compact />
           <button type="button" className="showing-close" onClick={() => setShowing(null)}>
             Close
           </button>
@@ -146,9 +147,11 @@ export function FrontDesk({ site, masthead, howItWorks }: FrontDeskProps) {
 /** The door to the back office: what the leasing team gets from this renter's call. */
 function TeamLink({
   conversationId,
+  teamName,
   compact = false,
 }: {
   conversationId: string | null;
+  teamName: string;
   compact?: boolean;
 }) {
   if (!conversationId) return null;
@@ -156,19 +159,19 @@ function TeamLink({
   if (compact) {
     return (
       <a className="team-link-inline" href={href} target="_blank" rel="noopener">
-        See what the leasing team receives
+        See what {teamName} receives
       </a>
     );
   }
   return (
     <aside className="team-link" aria-label="Leasing team view">
-      <p className="team-link-title">This call is being screened</p>
+      <p className="team-link-title">Your conversation is being prepared for the leasing team</p>
       <p>
-        When you hang up, open the leasing team&rsquo;s back office to see the lead, summary and
-        call-quality checks generated from your conversation.
+        After you hang up, see exactly what {teamName} receives: your details, a summary,
+        and a quality review of the call.
       </p>
       <a href={href} target="_blank" rel="noopener">
-        Open the leasing team view
+        View the leasing team&rsquo;s report
       </a>
     </aside>
   );

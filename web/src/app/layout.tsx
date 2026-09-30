@@ -1,19 +1,21 @@
 import type { Metadata, Viewport } from "next";
-import { Atkinson_Hyperlegible, Bricolage_Grotesque } from "next/font/google";
+import { Bodoni_Moda, Jost } from "next/font/google";
 
 import { site } from "@/lib/site";
 
 import "./globals.css";
 
-const display = Bricolage_Grotesque({
+// Bodoni for the private-client voice (headings, prices); Jost (Futura-like) for everything else.
+const display = Bodoni_Moda({
   subsets: ["latin"],
-  weight: ["500", "700", "800"],
+  weight: ["400", "500", "600"],
+  style: ["normal", "italic"],
   variable: "--font-display",
 });
 
-const body = Atkinson_Hyperlegible({
+const body = Jost({
   subsets: ["latin"],
-  weight: ["400", "700"],
+  weight: ["300", "400", "500"],
   variable: "--font-body",
 });
 

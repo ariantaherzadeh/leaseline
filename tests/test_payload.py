@@ -74,4 +74,4 @@ def test_widget_is_branded_for_the_persona(payloads: tuple[dict, dict]) -> None:
     _, platform = payloads
     widget = platform["widget"]
     assert widget["text_contents"]["main_label"] == "Talk to Nora"
-    assert widget["avatar"]["color_1"] == "#0E7C66"
+    assert widget["avatar"] == {"type": "orb", "color_1": "#16202B", "color_2": "#B08D57"}

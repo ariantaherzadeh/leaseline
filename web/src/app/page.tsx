@@ -10,8 +10,8 @@ export default function Home() {
     <header className="masthead">
       <Link className="wordmark" href="/" aria-label="LeaseLine home">
         <svg viewBox="0 0 32 32" aria-hidden="true">
-          <circle cx="12" cy="16" r="5" />
-          <path d="M17 16h9M22 16v4" />
+          <circle cx="11" cy="16" r="5.5" />
+          <path d="M16.5 16H27M23 16v4M26.5 16v3" />
         </svg>
         LeaseLine
       </Link>
@@ -21,17 +21,19 @@ export default function Home() {
 
   const howItWorks = (
     <div className="steps">
-      <h2>How a call goes</h2>
+      <h2>How it works</h2>
       <ol>
         <li>
-          <strong>Say what you&rsquo;re after.</strong> Budget, bedrooms, cars, pets, the feel you
-          want.
+          <strong>Describe what you&rsquo;re looking for.</strong> Budget, bedrooms, parking, pets,
+          and the way you like to live.
         </li>
         <li>
-          <strong>{persona.name} picks a home and explains why.</strong> Its card lights up here.
+          <strong>{persona.name} recommends a residence.</strong> It&rsquo;s highlighted here as{" "}
+          {persona.name} explains why it suits you.
         </li>
         <li>
-          <strong>Book a showing.</strong> Leave a name and number; {team.name} follows up.
+          <strong>Arrange a private showing.</strong> Leave your name and number, and {team.name}{" "}
+          will be in touch.
         </li>
       </ol>
     </div>
