@@ -26,7 +26,7 @@ def kb(rendered: RenderedAgent, listing_id: str) -> str:
 
 
 def test_prompt_is_personalised_and_lists_every_home(rendered: RenderedAgent) -> None:
-    assert "You are Steve" in rendered.prompt
+    assert "You are Nora" in rendered.prompt
     assert "the leasing team" in rendered.prompt
     assert "`gladstone-920-1`" in rendered.prompt
     assert "`icon-805-carling-1105`" in rendered.prompt
@@ -47,7 +47,7 @@ def test_prompt_template_names_no_specific_listing() -> None:
 
 
 def test_first_message_discloses_ai(rendered: RenderedAgent) -> None:
-    assert rendered.first_message.startswith("Hi, I'm Steve, an AI leasing assistant")
+    assert rendered.first_message.startswith("Hi, I'm Nora, an AI leasing assistant")
 
 
 def test_kb_facts(rendered: RenderedAgent) -> None:

@@ -1,4 +1,4 @@
-# LeaseLine demo tenant. Steve works for "the leasing team", with no realtor branding.
+# LeaseLine demo tenant. Nora works for "the leasing team", with no realtor branding.
 slug: demo
 agent_id: agent_2801m3svx7v2fz8sc70agxh2ts8q # written once by the first `leaseline deploy`, then committed (it's public)
 
@@ -7,8 +7,8 @@ team:
   city: Ottawa
 
 persona:
-  name: Steve
-  voice_id: cjVigY5qzO86Huf0OWal # ElevenLabs premade "Eric - Smooth, Trustworthy" (American)
+  name: Nora
+  voice_id: hpp4J3VqNfWAUOO0d1Us # ElevenLabs premade "Bella - Professional, Bright, Warm" (American)
 
 brand:
   accent: "#0E7C66"

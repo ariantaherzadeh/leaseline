@@ -1,14 +1,14 @@
 # LeaseLine — Design
 
-> AI voice leasing assistant. The agent is **Steve**, LeaseLine's own persona. He works for whichever
-> realtor or property manager deploys him and isn't tied to any one of them.
+> AI voice leasing assistant. The agent is **Nora**, LeaseLine's own persona. She works for whichever
+> realtor or property manager deploys her and isn't tied to any one of them.
 > Status: design only, nothing implemented yet.
 
 ## 1. What we're building
 
 A voice agent on ElevenLabs Agents that a prospective renter talks to in the browser. It:
 
-1. Greets as Steve and discloses he's an AI leasing assistant
+1. Greets as Nora and discloses she's an AI leasing assistant
 2. Qualifies: budget, bedrooms, move-in date, occupants, parking, pets, lifestyle
 3. Recommends the best-fit listing and explains why, using the renter's own words
 4. Answers questions only from the listing data; otherwise offers a follow-up from the leasing team
@@ -89,8 +89,8 @@ leaseline/
 ```yaml
 slug: demo
 agent_id: null   # written once by the first deploy, then committed
-team:      { name: "the leasing team", city: Ottawa }   # who Steve refers to; optional realtor name
-persona:   { name: Steve, voice_id: TBD }             # product default; a tenant may override
+team:      { name: "the leasing team", city: Ottawa }   # who Nora refers to; optional realtor name
+persona:   { name: Nora, voice_id: hpp4J3VqNfWAUOO0d1Us }             # product default; a tenant may override
 brand:     { accent: "#…", logo: assets/… }            # LeaseLine look; optional co-brand line
 domains:   [leaseline.netlify.app, localhost]
 follow_up: "Someone from the leasing team will reach out within one business day"
@@ -145,7 +145,7 @@ required field is missing, and warns on `TBD`.
 | Guardrails | `focus` + `prompt_injection` + custom rules: (a) never state listing facts not in the KB, (b) **no steering on protected grounds** (Ontario Human Rights Code: family status, age, disability, etc.); qualify on needs, not identity | Real-estate compliance. Worth mentioning in the pitch. |
 | Built-in tools | `end_call` | Clean close |
 | LLM | Low-latency model (candidates: `gemini-2.5-flash`, `claude-haiku-4-5`, `gpt-5.4-mini`), picked by A/B in dashboard tests | Latency matters more than depth for voice |
-| Voice | **Eric** (`cjVigY5qzO86Huf0OWal`, "Smooth, Trustworthy", American, conversational). Backup: Chris (`iP95p4xoKVk53GoZ742B`). | Warm, credible male voice for "Steve". A custom voice can come later. |
+| Voice | **Bella** (`hpp4J3VqNfWAUOO0d1Us`, "Professional, Bright, Warm", American). Backup: Sarah (`EXAVITQu4vr4xnSDxMaL`). | Warm, credible voice for "Nora". A custom voice can come later. |
 | Language | English only | Per scope |
 | Cost protection | `max_duration_seconds: 300`, a daily conversation limit, low concurrency | You're on the **Starter** plan; a public page shouldn't burn credits |
 | Privacy | Short retention for transcripts/audio; the agent says contact info is shared only with the leasing team | Collecting personal info |
@@ -191,7 +191,7 @@ Simulated-caller scenarios in `tests/agent_scenarios.yaml`:
 
 ## 8. Landing page
 
-- **Look:** LeaseLine product brand only; Steve is the face of it. No realtor or brokerage
+- **Look:** LeaseLine product brand only; Nora is the face of it. No realtor or brokerage
   branding in the demo tenant. A tenant *can* add a text co-brand line ("for Jane Doe,
   REALTOR®"), but never another company's logo.
 - **Sections:** hero (one line + "Talk to LeaseLine" button that starts the widget) → listing
@@ -303,9 +303,9 @@ view, amenities, A/C and a concierge.
 
 ## 13. Open questions
 
-1. The Icon's availability date and its pet restrictions, if you know them. Until then, Steve
+1. The Icon's availability date and its pet restrictions, if you know them. Until then, Nora
    says they need confirming with the leasing team.
 
-Resolved: no fictional third listing · persona **Steve**, voice **Eric** · real addresses OK to
+Resolved: no fictional third listing · persona **Nora**, voice **Bella** · real addresses OK to
 publish · domain `leaseline.netlify.app` (may change later) · Gladstone $2,695, 700 sq ft ·
 listings are managed only by pushing to GitHub (§9).

@@ -1,6 +1,6 @@
 # LeaseLine: notes for Claude Code
 
-AI voice leasing assistant ("Steve") on ElevenLabs Agents. The design and roadmap are in
+AI voice leasing assistant ("Nora") on ElevenLabs Agents. The design and roadmap are in
 `docs/DESIGN.md`; read it before making structural changes.
 
 ## Workflow
