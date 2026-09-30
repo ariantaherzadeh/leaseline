@@ -10,6 +10,7 @@ from leaseline import __version__
 from leaseline.deploy import DeployError, apply_plan, check_plan, make_plan, record_agent_id
 from leaseline.loader import ValidationReport, validate_tenant
 from leaseline.render import AGENT_DIR, render_agent, write_build
+from leaseline.site import SiteError, export_site
 
 app = typer.Typer(
     help="Sync LeaseLine tenants (agent config + listings) to ElevenLabs and build the site.",
@@ -132,3 +133,22 @@ def deploy(
     if record_agent_id(root / tenant / "tenant.yaml", agent_id):
         typer.secho(f"  wrote agent_id to {root / tenant / 'tenant.yaml'}; commit it", bold=True)
     typer.secho(f"✓ deployed {tenant} → agent {agent_id}", fg=typer.colors.GREEN, bold=True)
+
+
+@app.command("export-site")
+def export_site_command(
+    tenant: str = TenantOption,
+    root: Path = RootOption,
+    out: Path = typer.Option(
+        Path("web/src/data/site.json"), "--out", help="Where the Next.js site reads its data."
+    ),
+) -> None:
+    """Export a tenant's listings and branding as JSON for the Next.js site (web/)."""
+    report = _load_or_exit(tenant, root)
+    assert report.tenant is not None
+    try:
+        path = export_site(report.tenant, report.listings, out)
+    except SiteError as e:
+        typer.secho(f"✗ {e}", fg=typer.colors.RED, bold=True, err=True)
+        raise typer.Exit(code=1) from e
+    typer.secho(f"✓ wrote {path} for {tenant}", fg=typer.colors.GREEN, bold=True)

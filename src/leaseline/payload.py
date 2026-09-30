@@ -81,6 +81,27 @@ def _custom_guardrail(rule: dict[str, str]) -> dict[str, Any]:
     }
 
 
+KEY_AMBER = "#F2B233"  # matches --key in web/src/app/globals.css
+
+
+def widget_settings(tenant: Tenant) -> dict[str, Any]:
+    """The embed widget reads its look and copy from the agent, not from HTML attributes."""
+    name, accent = tenant.persona.name, tenant.brand.accent
+    return {
+        "avatar": {"type": "orb", "color_1": accent, "color_2": KEY_AMBER},
+        "transcript_enabled": True,
+        "text_contents": {
+            "main_label": f"Talk to {name}",
+            "start_call": "Start call",
+            "end_call": "End call",
+            "listening_status": "Listening",
+            "speaking_status": f"{name} is talking",
+            "connecting_status": "Connecting",
+        },
+        "styles": {"accent": accent, "accent_primary": "#FFFFFF"},
+    }
+
+
 def platform_settings(tenant: Tenant, rendered: RenderedAgent) -> dict[str, Any]:
     cfg = rendered.config
     guardrails = cfg["guardrails"]
@@ -91,6 +112,7 @@ def platform_settings(tenant: Tenant, rendered: RenderedAgent) -> dict[str, Any]
             "allowlist": [{"hostname": d} for d in tenant.domains],
         },
         "call_limits": dict(cfg["call_limits"]),
+        "widget": widget_settings(tenant),
         "privacy": {"retention_days": cfg["privacy"]["retention_days"]},
         "summary_language": "en",
         "guardrails": {

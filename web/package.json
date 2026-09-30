@@ -1,0 +1,31 @@
+{
+  "name": "leaseline-web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "data": "cd .. && uv run leaseline export-site --tenant ${LEASELINE_TENANT:-demo}",
+    "predev": "npm run data",
+    "dev": "next dev",
+    "prebuild": "npm run data",
+    "build": "next build",
+    "lint": "eslint",
+    "typecheck": "next typegen && tsc --noEmit"
+  },
+  "dependencies": {
+    "next": "16.3.8",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "server-only": "^0.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.8",
+    "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

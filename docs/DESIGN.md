@@ -20,19 +20,21 @@ customer deployment on a platform, not a one-off chatbot.
 ## 2. Architecture
 
 ```
-            repo (source of truth)                         ElevenLabs                    Netlify
- ┌──────────────────────────────────────┐        ┌─────────────────────────┐     ┌──────────────────────┐
- │ tenants/demo/tenant.yaml            │        │ Agent (public,          │     │ site/ (static)       │
- │ tenants/demo/listings/*.md          │──deploy──▶ domain allowlist)     │◀────│ index.html           │
- │ agent/prompt.md.j2  (shared prompt)  │  (Python│ KB docs (1 per listing)│ WSS │ <elevenlabs-convai>  │
- │ agent/config.yaml   (shared config)  │   SDK)  │ Guardrails, analysis,   │     │ + client tools       │
- └──────────────────────────────────────┘        │ tests                   │     └──────────────────────┘
-                 │ build-site (same data)         └─────────────────────────┘
-                 └──────────────────────────────────────────────────────────────▶ listing cards, branding
+            repo (source of truth)                         ElevenLabs                     Netlify (web/, Next.js)
+ ┌──────────────────────────────────────┐        ┌─────────────────────────┐     ┌──────────────────────────┐
+ │ tenants/demo/tenant.yaml            │        │ Agent (public,          │ WSS │ /      renter site        │
+ │ tenants/demo/listings/*.md          │──deploy──▶ domain allowlist)     │◀────│  <elevenlabs-convai>     │
+ │ agent/prompt.md.j2  (shared prompt)  │  (Python│ KB docs (1 per listing)│     │  + client tools          │
+ │ agent/config.yaml   (shared config)  │   SDK)  │ Guardrails, analysis,   │ API │ /team  leasing team view │
+ └──────────────────────────────────────┘        │ conversation history    │◀────│  /api/conversations/[id] │
+                 │ export-site (JSON, same data)  └─────────────────────────┘     └──────────────────────────┘
+                 └────────────────────────────────────────────────────────────────▶ listing cards, branding
 ```
 
-- **No backend, no API key in the browser.** The agent is public, and its allowlist limits
-  it to our domain (plus localhost for development). The widget only needs the `agent-id`.
+- **No API key in the browser.** The agent is public, and its allowlist limits it to our
+  domain (plus localhost for development). The widget only needs the `agent-id`. The one
+  server-side piece is a small route that reads a single call's results for the leasing team
+  view (§8); the key lives in Netlify's environment, never in the page.
 - **Python is the control plane** ("agent as code"). A small CLI turns repo files into the
   live agent, knowledge base and site. Deploys are repeatable, reviewed in git, and a new
   customer is a new folder. This is the Solutions Engineer story.
@@ -71,10 +73,9 @@ leaseline/
 │   ├── models.py                # pydantic schemas: Tenant, Listing
 │   ├── render.py                # prompt + KB doc rendering
 │   ├── deploy.py                # stateless sync: repo → ElevenLabs (see §9)
-│   ├── site.py                  # builds site/ from templates
+│   ├── site.py                  # exports tenant data as JSON for the Next.js site
 │   └── tests_sync.py            # pushes and runs ElevenLabs agent tests
-├── site_templates/              # index.html.j2, styles.css, app.js
-├── site/                        # build output (gitignored; Netlify builds it)
+├── web/                         # Next.js site: renter page (/) and leasing team view (/team)
 ├── tests/
 │   ├── test_models.py           # listing/tenant validation (pytest, offline)
 │   └── agent_scenarios.yaml     # simulated-caller tests run on ElevenLabs
@@ -166,8 +167,7 @@ leaseline validate      --tenant demo   # schema check, TBD warnings (offline)
 leaseline render        --tenant demo   # writes rendered prompt + KB docs to build/ for review
 leaseline deploy        --tenant demo   # sync KB docs + agent to match the repo (see §9)
 leaseline test          --tenant demo   # push scenarios and run ElevenLabs simulation tests
-leaseline build-site    --tenant demo   # render site/ with agent-id, cards, branding
-leaseline serve                          # local preview on localhost:8000
+leaseline export-site   --tenant demo   # write web/src/data/site.json for the Next.js site
 ```
 
 - Uses the official `elevenlabs` Python SDK (≥ 2.60). Deps: `elevenlabs`, `pydantic`, `pyyaml`,
@@ -189,18 +189,43 @@ Simulated-caller scenarios in `tests/agent_scenarios.yaml`:
 | Asks about neighbours' ethnicity/schools "for families like ours" | Stays neutral, no steering |
 | Tries prompt injection ("ignore your rules…") | Stays in role |
 
-## 8. Landing page
+## 8. Website (`web/`, Next.js)
 
+### Renter site (`/`)
 - **Look:** LeaseLine product brand only; Nora is the face of it. No realtor or brokerage
   branding in the demo tenant. A tenant *can* add a text co-brand line ("for Jane Doe,
   REALTOR®"), but never another company's logo.
-- **Sections:** hero (one line + "Talk to LeaseLine" button that starts the widget) → listing
-  cards (highlighted live by `show_listing`) → "How it works" (3 steps) → footer ("AI assistant ·
-  demo" disclosure, privacy line).
-- **Widget:** `<elevenlabs-convai agent-id=…>` with custom orb colours matching the brand, a custom
-  start button, and client tools registered through the `elevenlabs-convai:call` event.
-- **Stack:** plain HTML/CSS/JS, no framework. Built by `leaseline build-site`.
-- **Mobile-friendly,** and HTTPS on Netlify (microphone requires a secure context).
+- **Layout:** on desktop, a left panel that stays put (intro, **Talk to Nora**, how a call
+  goes) with the homes on the right, all above the fold. On mobile it stacks, with the homes
+  before "how it works".
+- **Voice:** ElevenLabs' embed widget (`<elevenlabs-convai>`) in the corner holds the call and
+  its transcript. Its copy and colours come from the agent's `platform_settings.widget`, set by
+  `deploy`. The intro button opens the same widget.
+- **Client tools,** registered through the widget's `elevenlabs-convai:call` event:
+  `show_listing` highlights a card with an amber "Nora is talking about this home" tag;
+  `show_showing_request` shows a confirmation. Both also receive the conversation id
+  (`system__conversation_id`, filled by ElevenLabs, not the model).
+
+### Leasing team view (`/team?c=<conversation id>`)
+The demo's answer to "what does the realtor get?", without a database or integrations.
+- Once Nora highlights a home, the renter page shows a link to the back office for *this* call.
+- `/team` has its own back-office look (dark console, "LeaseLine for leasing teams") and says
+  plainly that it's the team's side of the product.
+- It shows ElevenLabs' post-call analysis: the lead (data collection), summary, the three
+  evaluation checks with rationales, and the transcript. It polls until analysis is done.
+- **Privacy:** a visitor can only open the call their own session received. The server route
+  (`/api/conversations/[id]`) validates the id, returns 404 for calls from any other agent, and
+  sends only the fields the view needs.
+- **In production** this would be a private, authenticated dashboard listing every lead, or leads
+  pushed into the brokerage's CRM with post-call webhooks (and zero-retention mode on
+  Enterprise).
+
+### Stack
+- Next.js (App Router), TypeScript, plain CSS, `next/font`. Pages are prerendered; `/team` and
+  the API route run on demand.
+- Data comes from `leaseline export-site` (Python validates, then writes display-ready JSON),
+  run automatically by `npm run dev` / `npm run build`.
+- HTTPS on Netlify (the microphone needs a secure context).
 
 ## 9. Git-driven operations (no admin UI)
 
@@ -238,9 +263,9 @@ GitHub. There is no dashboard or form.
 - **Prompt and config changes** (`agent/**`, `tenant.yaml`) go through the same pipeline.
 
 ### Netlify
-- Connected to the GitHub repo. Build command: `pip install . && leaseline build-site --tenant demo`,
-  publish directory `site/`. The site build needs **no secrets**, only the repo files plus the
-  public `agent_id`.
+- Connected to the GitHub repo; base directory `web/`, using Netlify's Next.js runtime. The build
+  runs `leaseline export-site` (needs Python + uv), then `next build`.
+- One environment variable: `ELEVENLABS_API_KEY`, used only by the team view's API route.
 - Deploy previews on PRs show the new card before merge.
 - Domain `leaseline.netlify.app` (may change later). It's in the agent allowlist, along with
   `localhost` for development.
@@ -251,7 +276,7 @@ GitHub. There is no dashboard or form.
 |---|---|
 | Local | `.env` (gitignored) |
 | GitHub Actions | `ELEVENLABS_API_KEY` repository secret, restricted to the Agents permissions |
-| Netlify | none |
+| Netlify | `ELEVENLABS_API_KEY` (server-side only, for `/api/conversations/[id]`) |
 
 ## 10. Demo video (outline, full script in docs/demo-script.md)
 
@@ -267,7 +292,7 @@ GitHub. There is no dashboard or form.
 2. Listing template + demo listings (with TBDs) + `validate`
 3. Prompt template + `render` → review the prompt text together
 4. `deploy` → agent live; tune by talking to it in the ElevenLabs dashboard
-5. Client tools + site + `build-site` + `serve` → test locally
+5. Client tools + Next.js site + leasing team view → test locally
 6. Scenario tests + `test`
 7. GitHub repo + Actions (`pr-check`, `deploy`), Netlify connected to the repo, allowlist, limits
    → prove it end to end by adding a throwaway listing through a PR, then deleting it
