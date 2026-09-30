@@ -84,6 +84,8 @@ def client_tools(listings: list[Listing]) -> list[dict[str, Any]]:
         "enum": listing_ids,
         "description": "The id of the listing, exactly as given in your instructions.",
     }
+    # Filled in by ElevenLabs, not the model: lets the page open this call's leasing-team view.
+    conversation_id_param = {"type": "string", "dynamic_variable": "system__conversation_id"}
     return [
         {
             "type": "client",
@@ -95,7 +97,10 @@ def client_tools(listings: list[Listing]) -> list[dict[str, Any]]:
             "expects_response": False,
             "parameters": {
                 "type": "object",
-                "properties": {"listing_id": listing_id_param},
+                "properties": {
+                    "listing_id": listing_id_param,
+                    "conversation_id": conversation_id_param,
+                },
                 "required": ["listing_id"],
             },
         },
@@ -111,6 +116,7 @@ def client_tools(listings: list[Listing]) -> list[dict[str, Any]]:
                 "type": "object",
                 "properties": {
                     "listing_id": listing_id_param,
+                    "conversation_id": conversation_id_param,
                     "name": {"type": "string", "description": "The renter's name."},
                     "contact": {
                         "type": "string",

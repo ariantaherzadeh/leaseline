@@ -107,3 +107,11 @@ def test_cli_render(tmp_path: Path) -> None:
     )
     assert result.exit_code == 0, result.output
     assert (tmp_path / "demo" / "prompt.md").is_file()
+
+
+def test_client_tools_receive_the_conversation_id(rendered: RenderedAgent) -> None:
+    """Filled by ElevenLabs (not the model) so the page can open this call's team view."""
+    for tool in rendered.client_tools:
+        param = tool["parameters"]["properties"]["conversation_id"]
+        assert param == {"type": "string", "dynamic_variable": "system__conversation_id"}
+        assert "conversation_id" not in tool["parameters"]["required"]

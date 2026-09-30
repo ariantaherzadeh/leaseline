@@ -66,3 +66,10 @@ def test_guardrails_enabled(payloads: tuple[dict, dict]) -> None:
     assert guardrails["focus"]["is_enabled"] and guardrails["prompt_injection"]["is_enabled"]
     names = [c["name"] for c in guardrails["custom"]["config"]["configs"]]
     assert "Fair housing (no steering)" in names
+
+
+def test_widget_is_branded_for_the_persona(payloads: tuple[dict, dict]) -> None:
+    _, platform = payloads
+    widget = platform["widget"]
+    assert widget["text_contents"]["main_label"] == "Talk to Nora"
+    assert widget["avatar"]["color_1"] == "#0E7C66"

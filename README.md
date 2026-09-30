@@ -14,8 +14,10 @@ from verified listing data, and books a showing with the leasing team.
   them to ElevenLabs.
 - **Git is the admin panel.** Add a listing by opening a PR with one Markdown file. CI validates it,
   and on merge Nora and the website both update.
-- **No backend.** A static site on Netlify embeds the ElevenLabs widget; the agent is locked to the
-  site's domain.
+- **A real front desk.** A Next.js site on Netlify embeds the ElevenLabs widget; as Nora talks,
+  the home she recommends lights up. The agent is locked to the site's domain.
+- **The leasing team's side.** After a call, open the back-office view to see the lead, summary
+  and call-quality checks ElevenLabs generated from that conversation.
 
 ## Development
 
@@ -26,6 +28,9 @@ uv sync                      # install
 cp .env.example .env         # add your ElevenLabs API key
 uv run leaseline --help      # CLI
 uv run pytest                # tests
+
+npm --prefix web ci          # site dependencies
+npm --prefix web run dev     # http://localhost:3000
 ```
 
 Contributions go through pull requests. See [CLAUDE.md](CLAUDE.md) for conventions.
