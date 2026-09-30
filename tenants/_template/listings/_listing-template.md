@@ -1,6 +1,6 @@
 ---
 # Copy to tenants/<tenant>/listings/<id>.md. The filename must equal `id`.
-# Only write facts you've verified. Unknown → TBD (Steve will offer a follow-up, never guess).
+# Only write facts you've verified. Unknown → TBD (the assistant will offer a follow-up, never guess).
 id: street-number-unit # lowercase-with-dashes
 title: 123 Example St, Unit 4
 address:

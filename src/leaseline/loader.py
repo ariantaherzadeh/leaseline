@@ -100,7 +100,7 @@ def validate_tenant(tenant_dir: Path) -> ValidationReport:
             )
         seen[listing.id] = path
         for name in listing.tbd_fields():
-            report.warnings.append(f"{path}: {name} is TBD (Steve will offer a follow-up)")
+            report.warnings.append(f"{path}: {name} is TBD (the assistant will offer a follow-up)")
         report.listings.append(listing)
 
     return report

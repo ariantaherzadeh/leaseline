@@ -75,12 +75,14 @@ class Listing(_Strict):
 
 
 class Team(_Strict):
-    name: str = Field(description='How Steve refers to the humans, e.g. "the leasing team".')
+    name: str = Field(
+        description='How the assistant refers to the humans, e.g. "the leasing team".'
+    )
     city: str
 
 
 class Persona(_Strict):
-    name: str = "Steve"
+    name: str = "Nora"
     voice_id: str
 
 

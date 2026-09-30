@@ -3,12 +3,12 @@ slug: your-slug # must match the folder name
 agent_id: null # leave null; the first deploy creates the agent
 
 team:
-  name: the leasing team # how Steve refers to the humans he hands off to
+  name: the leasing team # how the assistant refers to the humans it hands off to
   city: Your City
 
 persona:
-  name: Steve
-  voice_id: cjVigY5qzO86Huf0OWal # any ElevenLabs voice id
+  name: Nora
+  voice_id: hpp4J3VqNfWAUOO0d1Us # any ElevenLabs voice id
 
 brand:
   accent: "#0E7C66"
