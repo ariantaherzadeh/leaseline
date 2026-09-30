@@ -238,11 +238,11 @@ GitHub. There is no dashboard or form.
 2. Open a PR (or push to `main` directly for a quick change).
 3. **PR checks** (`ci.yml`) validate the file, run the tests and build the site. A **Deploy plan**
    job does a dry run and shows the result in the job summary, e.g. `+ add listing kanata-12-main`.
-4. **Merge to main** → `deploy.yml` runs two jobs in order:
-   - **Sync ElevenLabs:** `leaseline deploy` for every tenant uploads the new KB doc and attaches
-     it to the agent (`ELEVENLABS_API_KEY` repository secret).
-   - **Deploy site:** builds with `netlify.toml` and publishes to production, so the new card
-     appears. It runs after the sync, so the page never shows a home the agent doesn't know.
+4. **Merge to main** → two things happen:
+   - **`deploy.yml`** runs `leaseline deploy` for every tenant: uploads the new KB doc and
+     attaches it to the agent (`ELEVENLABS_API_KEY` repository secret).
+   - **Netlify** (Git integration) rebuilds the site from the same commit, so the new card
+     appears. PRs also get a Netlify deploy preview.
 5. Live in about 1–2 minutes. Editing a file updates that listing; deleting a file removes it
    from both the agent and the site.
 
@@ -281,7 +281,7 @@ GitHub. There is no dashboard or form.
 | Where | Secret |
 |---|---|
 | Local | `.env` (gitignored) |
-| GitHub Actions | `ELEVENLABS_API_KEY` and `NETLIFY_AUTH_TOKEN` repository secrets; `NETLIFY_SITE_ID` variable |
+| GitHub Actions | `ELEVENLABS_API_KEY` repository secret |
 | Netlify | `ELEVENLABS_API_KEY`, ideally a read-only key (server-side only, for `/api/conversations/[id]`) |
 
 ## 10. Demo video (outline, full script in docs/demo-script.md)
