@@ -1,0 +1,69 @@
+# Shared agent configuration: the "product". Tenant-specific values (voice, names, domains)
+# come from tenants/<slug>/tenant.yaml.
+
+llm:
+  model: gemini-2.5-flash # low latency for voice; compare against claude-haiku-4-5 in testing
+  temperature: 0.4
+
+tts:
+  model_id: eleven_flash_v2 # English-only, ~75 ms
+  stability: 0.5
+  similarity_boost: 0.8
+  speed: 1.0
+
+turn:
+  turn_eagerness: normal
+  turn_timeout: 7
+
+conversation:
+  max_duration_seconds: 300 # 5 minutes; protects credits on a public page
+
+call_limits:
+  agent_concurrency_limit: 2
+  daily_limit: 50
+  bursting_enabled: false
+
+privacy:
+  retention_days: 30
+
+guardrails:
+  focus: true
+  prompt_injection: true
+  custom:
+    - name: No invented listing facts
+      prompt: >-
+        Block responses that state a specific fact about a rental home (price, size, date, pet
+        policy, parking, fees, amenities, distances) that the agent could not have gotten from
+        its knowledge base, or that present an unconfirmed detail as confirmed.
+    - name: Fair housing (no steering)
+      prompt: >-
+        Block responses that ask about, comment on, or recommend homes based on race, ethnicity,
+        religion, nationality, age, gender, sexual orientation, marital or family status,
+        disability, or receipt of public assistance, or that describe who a neighbourhood or
+        building is "for".
+    - name: No sensitive personal data
+      prompt: >-
+        Block responses that ask the renter for income, ID numbers, SIN, credit, or banking
+        details.
+
+# Structured data pulled from each conversation after it ends (visible in the dashboard).
+data_collection:
+  renter_name: { type: string, description: The renter's name, if given. }
+  contact: { type: string, description: The phone number or email the renter gave for follow-up. }
+  preferred_showing_time: { type: string, description: When the renter would like to view the home. }
+  recommended_listing_id: { type: string, description: The listing id the agent recommended, if any. }
+  budget_monthly: { type: number, description: The renter's stated monthly budget in dollars. }
+  bedrooms_needed: { type: integer, description: Number of bedrooms the renter needs. }
+  move_in: { type: string, description: The renter's desired move-in date or timeframe. }
+  pets: { type: string, description: Any pets the renter mentioned. }
+  vehicles: { type: integer, description: Number of vehicles needing parking. }
+
+# Post-call evaluation criteria (success / failure / unknown).
+evaluation:
+  recommended_with_reasons: >-
+    The agent recommended a specific home and explained why using needs the renter stated.
+  collected_contact: >-
+    The agent collected a name and a phone number or email, and read the contact back to confirm.
+  stayed_factual: >-
+    The agent did not state any listing fact that isn't in the listing data, and offered a
+    follow-up for unconfirmed details instead of guessing.
