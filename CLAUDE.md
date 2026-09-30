@@ -13,6 +13,8 @@ AI voice leasing assistant ("Steve") on ElevenLabs Agents. The design and roadma
 - `uv run ruff format . && uv run ruff check .`: format and lint
 - `uv run pytest`: tests (offline; never hit the ElevenLabs API)
 - `uv run leaseline --help`: CLI
+- `uv run leaseline validate -t demo`: check listings
+- `uv run leaseline render -t demo`: write the prompt, KB docs and tools to `build/demo/` for review
 
 ## Rules
 - Listing facts come only from the source listing or the user. Unknown → `TBD`, never guessed.

@@ -1,0 +1,42 @@
+{#- One knowledge-base document per listing. Facts first, then the listing's own prose. -#}
+# {{ l.title }}
+
+Listing ID: {{ l.id }}
+
+## Facts
+- Address: {{ l.address.street }}{% if l.address.unit %}, Unit {{ l.address.unit }}{% endif %}, {{ l.address.city }}, {{ l.address.province }} {{ l.address.postal_code }}
+- Neighbourhood: {{ l.neighbourhood }}
+- Type: {{ l.property_type }}
+- Rent: ${{ "{:,}".format(l.rent_monthly) }} per month
+- Bedrooms: {{ l.beds }}
+- Bathrooms: {{ l.baths | trim_float }}
+- Size: {{ l.sqft | fact(suffix=" square feet") }}
+- Available: {{ l.available | fact }}
+- Pets: {{ l.pets | fact }}
+- Utilities included: {{ l.utilities_included | join(", ") if l.utilities_included else "none listed" }}
+- Tenant pays: {{ l.tenant_pays | join(", ") if l.tenant_pays else "nothing extra listed" }}
+- Laundry: {{ l.laundry | fact }}
+- Parking: {{ l.parking | parking }}
+- Cooling: {{ l.cooling | fact }}
+- Heating: {{ l.heating | fact }}
+{%- if l.outdoor %}
+- Outdoor space: {{ l.outdoor }}
+{%- endif %}
+{%- if l.storage %}
+- Storage: {{ l.storage }}
+{%- endif %}
+{%- if l.transit %}
+- Transit: {{ l.transit }}
+{%- endif %}
+{%- if l.amenities %}
+- Building amenities: {{ l.amenities | join(", ") }}
+{%- endif %}
+{%- if l.highlights %}
+
+## Highlights
+{%- for h in l.highlights %}
+- {{ h }}
+{%- endfor %}
+{%- endif %}
+
+{{ l.body }}
