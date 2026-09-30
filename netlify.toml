@@ -1,0 +1,30 @@
+# Netlify builds the Next.js site in web/. The build first runs `leaseline export-site`
+# (Python, via uv, from the repo root) to turn tenants/ into the site's data.
+
+[build]
+  base = "web"
+  command = "pip install --quiet uv && npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "22"
+  LEASELINE_TENANT = "demo"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # The call widget needs the microphone on our own origin; nothing else does.
+    Permissions-Policy = "microphone=(self), camera=(), geolocation=()"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+
+[[headers]]
+  for = "/team*"
+  [headers.values]
+    X-Robots-Tag = "noindex"
+    Cache-Control = "no-store"
+
+# Netlify's Next.js runtime: serverless functions for /team and /api, prerendered pages on the CDN.
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
