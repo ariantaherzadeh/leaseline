@@ -88,8 +88,10 @@ the workspace's post-call webhook, and self-tests the signature path with a sign
 Needs `SUPABASE_ACCESS_TOKEN` (scoped to this project) in `.env`.
 
 ### Listings (phase 2)
-- Dashboard: list, add, edit, archive, delete (with confirm); validation mirrors the Python
-  schema; "Not confirmed yet" checkboxes instead of `TBD`.
+- Dashboard: list, add, edit, archive, delete (with confirm), and per-listing edit history.
+  Validation (`packages/shared/src/listing.ts`, zod) mirrors the table and the Python schema:
+  a blank optional fact is saved as `NULL` ("not confirmed yet"); availability is now / a date /
+  not confirmed; the URL name is generated from the title. Drafts stay private to the team.
 - **Paste-to-fill:** paste a listing description; an Edge Function asks Claude to extract the
   fields; the team reviews before saving.
 - On change, a database trigger dispatches the **Python** sync workflow (`leaseline deploy`),

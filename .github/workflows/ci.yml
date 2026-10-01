@@ -87,6 +87,8 @@ jobs:
         working-directory: .
       - run: npm run typecheck
         working-directory: .
+      - run: npm test
+        working-directory: .
       - name: Build the public site
         run: npm run build
       - name: Build the dashboard

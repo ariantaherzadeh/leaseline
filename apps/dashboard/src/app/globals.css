@@ -123,3 +123,21 @@ input:disabled, select:disabled, textarea:disabled { background: var(--surface);
 .login-card .brand span { background: var(--accent-soft); color: var(--accent); }
 .login-card h1 { margin-bottom: .4rem; }
 .login-card > .muted { margin-bottom: 1.25rem; }
+
+/* ---- listing form ---- */
+.listing-form { display: grid; gap: 1rem; margin-bottom: 1rem; }
+.form-grid { display: grid; gap: .9rem 1rem; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); }
+.form-grid + .form-grid { margin-top: .9rem; }
+.span-2 { grid-column: span 2; }
+@media (max-width: 640px) { .span-2 { grid-column: auto; } }
+.hint { font-style: normal; font-size: .78rem; color: var(--muted); }
+em.form-error { font-style: normal; font-size: .8rem; }
+input[aria-invalid="true"] { border-color: var(--bad); }
+.radios { border: 0; padding: 0; margin: 0 0 .5rem; display: flex; flex-wrap: wrap; gap: .5rem 1.25rem; }
+.radios label { display: inline-flex; align-items: center; gap: .4rem; font-weight: 600; }
+.radios input { width: auto; }
+.form-actions { position: sticky; bottom: 0; padding: .75rem 0; background: linear-gradient(transparent, var(--surface) 35%); }
+.banner { background: var(--bad-bg); padding: .75rem 1rem; border-radius: var(--radius); }
+.notice + .table-wrap, .notice + .empty { margin-top: 1rem; }
+.table tr.is-highlighted td { background: var(--accent-soft); }
+.history ul { margin: 0; padding-left: 1.1rem; display: grid; gap: .35rem; font-size: .9rem; }
