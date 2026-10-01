@@ -1,17 +1,15 @@
-import { type NextRequest, NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
+import { redirectTo } from "@/lib/redirect";
 import { createClient } from "@/lib/supabase/server";
 
 // The magic link lands here with a one-time `code` (PKCE). Exchange it for a session cookie.
 export async function GET(request: NextRequest) {
   const code = request.nextUrl.searchParams.get("code");
-  const home = new URL("/", request.url);
   if (code) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (!error) return NextResponse.redirect(home);
+    if (!error) return redirectTo("/");
   }
-  const login = new URL("/login", request.url);
-  login.searchParams.set("error", "link");
-  return NextResponse.redirect(login);
+  return redirectTo("/login?error=link");
 }
