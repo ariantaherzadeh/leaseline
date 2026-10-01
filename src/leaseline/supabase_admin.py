@@ -12,6 +12,8 @@ import httpx
 
 MANAGEMENT_API = "https://api.supabase.com/v1"
 DASHBOARD_URL = "https://app.tryleaseline.com"
+# Netlify's own address for the dashboard site: works before (and alongside) the custom domain.
+NETLIFY_DASHBOARD_URL = "https://leaseline-app.netlify.app"
 LOCAL_DASHBOARD_URL = "http://localhost:3001"
 ROLES = ("admin", "editor", "viewer")
 
@@ -56,7 +58,10 @@ class Project:
             "disable_signup": True,
             "external_email_enabled": True,
             "site_url": DASHBOARD_URL,
-            "uri_allow_list": f"{DASHBOARD_URL}/auth/callback,{LOCAL_DASHBOARD_URL}/auth/callback",
+            "uri_allow_list": ",".join(
+                f"{url}/auth/callback"
+                for url in (DASHBOARD_URL, NETLIFY_DASHBOARD_URL, LOCAL_DASHBOARD_URL)
+            ),
             "mailer_otp_exp": 3600,
         }
         with self._mgmt() as api:
