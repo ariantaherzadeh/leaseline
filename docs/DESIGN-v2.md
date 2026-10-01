@@ -8,7 +8,7 @@
 
 | Phase | Outcome | Status |
 |---|---|---|
-| 0 | Monorepo: `apps/site`, `apps/dashboard`, `packages/shared`, `supabase/` | In progress |
+| 0 | Monorepo: `apps/site`, `apps/dashboard`, `packages/shared`, `supabase/` | Done |
 | 1 | Leads reach the realtor: post-call webhook → Supabase → email; leads inbox | Planned |
 | 2 | Non-developers manage listings in the dashboard; site + Nora read from Supabase | Planned |
 | 3 | Phone line + consented follow-up calls (Twilio) | Later |
@@ -38,8 +38,9 @@
 - `tenants`: one row per customer (`slug`, display name).
 - `team_members(user_id, tenant_id, role)`: authorization. Login (`auth.users`) proves who you
   are; this table decides which tenant's data you can see and whether you can edit.
-- `listings`: the fields from the listing schema; unconfirmed facts are `null` plus an explicit
-  `*_confirmed` flag rather than the string `TBD`; `status` (`draft` · `published` · `archived`).
+- `listings`: the fields from the listing schema; an unconfirmed fact is `null` (the dashboard
+  shows a "Not confirmed yet" checkbox) rather than the string `TBD`; `status` (`draft` ·
+  `published` · `archived`).
 - `listing_events`: who changed what, when (edit history).
 - `leads`: conversation id, tenant, contact fields, recommended listing, summary, evaluation
   results, call duration, `status` (new · contacted · closed).
@@ -50,6 +51,14 @@
 - Public sign-up is disabled. Users join by invitation (magic link).
 - Secrets live in Supabase (Edge Function secrets and Vault), never in the browser. The site
   and dashboard only use the publishable key.
+
+**Working with the database**
+- Migrations: `supabase/migrations/` (applied to the project, named by version).
+- Seed: `supabase/seed.sql`, generated from the original listing files by
+  `scripts/listings_to_sql.py`.
+- RLS checks: `supabase/tests/rls_test.sql` runs in a rolled-back transaction; every row must
+  pass. Run it after any policy change.
+- Types: `packages/shared/src/database.types.ts`, generated from the live schema.
 
 ### Leads (phase 1)
 1. ElevenLabs post-call webhook → Supabase Edge Function `ingest-lead`.
