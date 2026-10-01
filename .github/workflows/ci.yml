@@ -84,8 +84,14 @@ jobs:
       - name: Export site data from the demo tenant
         run: npm run data
       - run: npm run lint
+        working-directory: .
       - run: npm run typecheck
-      - run: npm run build
+        working-directory: .
+      - name: Build the public site
+        run: npm run build
+      - name: Build the dashboard
+        run: npm run build:dashboard
+        working-directory: .
 
   plan:
     name: Deploy plan

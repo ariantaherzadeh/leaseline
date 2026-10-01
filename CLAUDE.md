@@ -18,7 +18,10 @@ AI voice leasing assistant ("Nora") on ElevenLabs Agents. The design and roadmap
 - `uv run leaseline deploy -t demo --dry-run`: show what would change on ElevenLabs (drop `--dry-run` to apply)
 - `npm run dev:site`: the Next.js site on http://localhost:3000 (exports site data first;
   reads `ELEVENLABS_API_KEY` from the repo-root `.env`)
-- `npm run lint && npm run typecheck`: web checks
+- `npm run lint && npm run typecheck`: web checks (both apps + shared)
+- `npm run dev:dashboard`: the leasing team dashboard on http://localhost:3001
+- `uv run leaseline configure-auth`: invite-only login + allowed redirect URLs (needs SUPABASE_ACCESS_TOKEN)
+- `uv run leaseline add-member you@example.com --role admin`: give someone dashboard access
 
 ## ElevenLabs API notes (learned the hard way)
 - System tools (e.g. `end_call`) go in `prompt.tools` with `type: system`; `built_in_tools` is
