@@ -2,7 +2,8 @@
 
 > AI voice leasing assistant. The agent is **Nora**, LeaseLine's own persona. She works for whichever
 > realtor or property manager deploys her and isn't tied to any one of them.
-> Status: design only, nothing implemented yet.
+> Status: v1 design, implemented. Listings have since moved to Supabase and the dashboard; see
+> [DESIGN-v2.md](DESIGN-v2.md). Where the two differ, v2 wins.
 
 ## 1. What we're building
 
