@@ -1,8 +1,8 @@
-# Netlify builds the Next.js site in web/. The build first runs `leaseline export-site`
-# (Python, via uv, from the repo root) to turn tenants/ into the site's data.
+# Netlify builds the public Next.js site in apps/site (an npm workspace; dependencies are
+# installed from the repo root). The build first runs `leaseline export-site` (Python, via uv).
 
 [build]
-  base = "web"
+  base = "apps/site"
   command = "pip install --quiet uv && npm run build"
   publish = ".next"
 

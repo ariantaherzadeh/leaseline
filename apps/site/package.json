@@ -1,9 +1,9 @@
 {
-  "name": "leaseline-web",
+  "name": "@leaseline/site",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "data": "cd .. && uv run leaseline export-site --tenant ${LEASELINE_TENANT:-demo}",
+    "data": "cd ../.. && uv run leaseline export-site --tenant ${LEASELINE_TENANT:-demo} --out apps/site/src/data/site.json",
     "predev": "npm run data",
     "dev": "next dev",
     "prebuild": "npm run data",
@@ -15,7 +15,8 @@
     "next": "16.3.8",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
-    "server-only": "^0.0.1"
+    "server-only": "^0.0.1",
+    "@leaseline/shared": "*"
   },
   "devDependencies": {
     "@netlify/plugin-nextjs": "^5.16.1",

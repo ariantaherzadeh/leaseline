@@ -12,7 +12,7 @@ updates:
     schedule:
       interval: weekly
   - package-ecosystem: npm
-    directory: /web
+    directory: /
     schedule:
       interval: weekly
     groups:
