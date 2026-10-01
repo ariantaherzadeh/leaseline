@@ -140,10 +140,10 @@ def export_site_command(
     tenant: str = TenantOption,
     root: Path = RootOption,
     out: Path = typer.Option(
-        Path("web/src/data/site.json"), "--out", help="Where the Next.js site reads its data."
+        Path("apps/site/src/data/site.json"), "--out", help="Where the Next.js site reads its data."
     ),
 ) -> None:
-    """Export a tenant's listings and branding as JSON for the Next.js site (web/)."""
+    """Export a tenant's listings and branding as JSON for the Next.js site (apps/site)."""
     report = _load_or_exit(tenant, root)
     assert report.tenant is not None
     try:

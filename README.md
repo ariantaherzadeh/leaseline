@@ -31,8 +31,8 @@ cp .env.example .env         # add your ElevenLabs API key
 uv run leaseline --help      # CLI
 uv run pytest                # tests
 
-npm --prefix web ci          # site dependencies
-npm --prefix web run dev     # http://localhost:3000
+npm ci          # site dependencies
+npm run dev:site     # http://localhost:3000
 ```
 
 Contributions go through pull requests. See [CLAUDE.md](CLAUDE.md) for conventions.

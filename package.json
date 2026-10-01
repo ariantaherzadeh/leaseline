@@ -1,0 +1,17 @@
+{
+  "name": "leaseline",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev:site": "npm --workspace @leaseline/site run dev",
+    "build:site": "npm --workspace @leaseline/site run build",
+    "lint": "npm --workspaces --if-present run lint",
+    "typecheck": "npm --workspaces --if-present run typecheck"
+  }
+}

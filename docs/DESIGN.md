@@ -20,7 +20,7 @@ customer deployment on a platform, not a one-off chatbot.
 ## 2. Architecture
 
 ```
-            repo (source of truth)                         ElevenLabs                     Netlify (web/, Next.js)
+            repo (source of truth)                         ElevenLabs                     Netlify (apps/site, Next.js)
  ┌──────────────────────────────────────┐        ┌─────────────────────────┐     ┌──────────────────────────┐
  │ tenants/demo/tenant.yaml            │        │ Agent (public,          │ WSS │ /      renter site        │
  │ tenants/demo/listings/*.md          │──deploy──▶ domain allowlist)     │◀────│  <elevenlabs-convai>     │
@@ -75,7 +75,8 @@ leaseline/
 │   ├── deploy.py                # stateless sync: repo → ElevenLabs (see §9)
 │   ├── site.py                  # exports tenant data as JSON for the Next.js site
 │   └── tests_sync.py            # pushes and runs ElevenLabs agent tests
-├── web/                         # Next.js site: renter page (/) and leasing team view (/team)
+├── apps/site/                   # Next.js public site: renter page (/) and team view (/team)
+├── packages/shared/             # TypeScript types shared by the apps
 ├── tests/
 │   ├── test_models.py           # listing/tenant validation (pytest, offline)
 │   └── agent_scenarios.yaml     # simulated-caller tests run on ElevenLabs
@@ -167,7 +168,7 @@ leaseline validate      --tenant demo   # schema check, TBD warnings (offline)
 leaseline render        --tenant demo   # writes rendered prompt + KB docs to build/ for review
 leaseline deploy        --tenant demo   # sync KB docs + agent to match the repo (see §9)
 leaseline test          --tenant demo   # push scenarios and run ElevenLabs simulation tests
-leaseline export-site   --tenant demo   # write web/src/data/site.json for the Next.js site
+leaseline export-site   --tenant demo   # write apps/site/src/data/site.json for the Next.js site
 ```
 
 - Uses the official `elevenlabs` Python SDK (≥ 2.60). Deps: `elevenlabs`, `pydantic`, `pyyaml`,
@@ -189,7 +190,7 @@ Simulated-caller scenarios in `tests/agent_scenarios.yaml`:
 | Asks about neighbours' ethnicity/schools "for families like ours" | Stays neutral, no steering |
 | Tries prompt injection ("ignore your rules…") | Stays in role |
 
-## 8. Website (`web/`, Next.js)
+## 8. Website (`apps/site`, Next.js)
 
 ### Renter site (`/`)
 - **Look:** LeaseLine product brand only; Nora is the face of it. No realtor or brokerage
@@ -273,7 +274,7 @@ GitHub. There is no dashboard or form.
 ### Netlify
 - Project `leaseline`, live at **https://tryleaseline.com** (also https://leaseline.netlify.app). Deployed by `deploy.yml` with the Netlify
   CLI (`deploy --build --prod`), so the pipeline lives in the repo and runs after the ElevenLabs
-  sync. `netlify.toml` sets `base = "web"` and the `@netlify/plugin-nextjs` runtime; the build runs
+  sync. `netlify.toml` sets `base = "apps/site"` and the `@netlify/plugin-nextjs` runtime; the build runs
   `leaseline export-site` (Python + uv), then `next build`.
 - One environment variable: `ELEVENLABS_API_KEY`, used only by the team view's API route.
 - Deploy previews on PRs show the new card before merge.

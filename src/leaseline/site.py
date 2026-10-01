@@ -1,4 +1,4 @@
-"""Export a tenant as JSON for the Next.js site (web/). Python stays the single source of truth
+"""Export a tenant as JSON for the Next.js site (apps/site). Python stays the single source of truth
 for listing data: it validates, then hands the site display-ready values. No secrets: the page
 only carries the public agent id, and the agent itself is locked to the tenant's domains."""
 
