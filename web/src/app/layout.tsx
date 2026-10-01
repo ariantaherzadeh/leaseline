@@ -1,22 +1,14 @@
 import type { Metadata, Viewport } from "next";
-import { Bodoni_Moda, Jost } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 
 import { site } from "@/lib/site";
 
 import "./globals.css";
 
-// Bodoni for the private-client voice (headings, prices); Jost (Futura-like) for everything else.
-const display = Bodoni_Moda({
+const sans = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  style: ["normal", "italic"],
-  variable: "--font-display",
-});
-
-const body = Jost({
-  subsets: ["latin"],
-  weight: ["300", "400", "500"],
-  variable: "--font-body",
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-sans",
 });
 
 export const metadata: Metadata = {
@@ -32,7 +24,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html
       lang="en"
-      className={`${display.variable} ${body.variable}`}
+      className={sans.variable}
       style={{ "--brand": site.brand.accent } as React.CSSProperties}
     >
       <body>{children}</body>

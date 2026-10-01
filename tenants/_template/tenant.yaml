@@ -11,7 +11,7 @@ persona:
   voice_id: hpp4J3VqNfWAUOO0d1Us # any ElevenLabs voice id
 
 brand:
-  accent: "#16202B"
+  accent: "#1554D6"
   co_brand: null # optional text line, e.g. "for Jane Doe, REALTOR®"; never a logo
 
 domains: # bare hostnames allowed to embed the agent; the first is the primary domain

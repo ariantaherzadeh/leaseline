@@ -11,7 +11,7 @@ persona:
   voice_id: hpp4J3VqNfWAUOO0d1Us # ElevenLabs premade "Bella - Professional, Bright, Warm" (American)
 
 brand:
-  accent: "#16202B" # midnight ink; brass (#B08D57) is the site-wide highlight
+  accent: "#1554D6"
   co_brand: null
 
 domains: # first entry is the primary (canonical) domain

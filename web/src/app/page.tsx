@@ -6,34 +6,20 @@ import { site } from "@/lib/site";
 export default function Home() {
   const { persona, team, brand } = site;
 
-  const masthead = (
-    <header className="masthead">
-      <Link className="wordmark" href="/" aria-label="LeaseLine home">
-        <svg viewBox="0 0 32 32" aria-hidden="true">
-          <circle cx="11" cy="16" r="5.5" />
-          <path d="M16.5 16H27M23 16v4M26.5 16v3" />
-        </svg>
-        LeaseLine
-      </Link>
-      {brand.coBrand && <p className="co-brand">{brand.coBrand}</p>}
-    </header>
-  );
-
   const howItWorks = (
     <div className="steps">
       <h2>How it works</h2>
       <ol>
         <li>
-          <strong>Describe what you&rsquo;re looking for.</strong> Budget, bedrooms, parking, pets,
-          and the way you like to live.
+          <strong>Tell {persona.name} what you need.</strong> Budget, bedrooms, parking, pets,
+          move-in date.
         </li>
         <li>
-          <strong>{persona.name} recommends a residence.</strong> It&rsquo;s highlighted here as{" "}
-          {persona.name} explains why it suits you.
+          <strong>Get a recommendation.</strong> The best match is highlighted while{" "}
+          {persona.name} explains why.
         </li>
         <li>
-          <strong>Arrange a private showing.</strong> Leave your name and number, and {team.name}{" "}
-          will be in touch.
+          <strong>Book a showing.</strong> Leave your name and number; {team.name} follows up.
         </li>
       </ol>
     </div>
@@ -44,8 +30,20 @@ export default function Home() {
       <a className="skip" href="#homes">
         Skip to homes
       </a>
+      <header className="topbar">
+        <Link className="wordmark" href="/" aria-label="LeaseLine home">
+          <svg viewBox="0 0 32 32" aria-hidden="true">
+            <rect width="32" height="32" rx="8" />
+            <circle cx="11" cy="16" r="5" />
+            <path d="M16 16h10M22 16v4M25.5 16v3" />
+          </svg>
+          LeaseLine
+        </Link>
+        {brand.coBrand && <p className="co-brand">{brand.coBrand}</p>}
+        <p className="topbar-note">Rentals in {team.city}</p>
+      </header>
       <main>
-        <FrontDesk site={site} masthead={masthead} howItWorks={howItWorks} />
+        <FrontDesk site={site} howItWorks={howItWorks} />
       </main>
       <footer className="footer">
         <p>

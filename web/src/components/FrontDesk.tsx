@@ -15,12 +15,11 @@ type ShowingRequest = {
 
 type FrontDeskProps = {
   site: Site;
-  /** Static, server-rendered parts of the left panel. */
-  masthead: ReactNode;
+  /** Static, server-rendered "how it works" for the assistant card. */
   howItWorks: ReactNode;
 };
 
-export function FrontDesk({ site, masthead, howItWorks }: FrontDeskProps) {
+export function FrontDesk({ site, howItWorks }: FrontDeskProps) {
   const { persona, listings } = site;
   const [activeId, setActiveId] = useState<string | null>(null);
   const [showing, setShowing] = useState<ShowingRequest | null>(null);
@@ -73,48 +72,70 @@ export function FrontDesk({ site, masthead, howItWorks }: FrontDeskProps) {
 
   return (
     <div className="desk">
-      <section className="panel" aria-labelledby="hero-title">
-        {masthead}
-        <h1 id="hero-title">Tell {persona.name} how you want to live.</h1>
+      <section className="intro" aria-labelledby="hero-title">
+        <h1 id="hero-title">Find your next rental by talking to {persona.name}.</h1>
         <p className="lede">
-          {persona.name} is an AI leasing assistant for {site.team.name}. Describe your budget, your
-          move-in date, the car, the dog, the view you&rsquo;re hoping for. {persona.name} will suggest
-          the residence that suits you, answer your questions, and arrange a private showing.
+          {persona.name} is an AI leasing assistant. Describe what you need and get matched with
+          the right home, then book a showing, all in one short voice call.
         </p>
-        <div className="cta-row">
-          <button className="cta" type="button" onClick={startWidgetCall}>
-            <span className="cta-dot" aria-hidden="true" />
-            Speak with {persona.name}
-          </button>
-          <p className="cta-note">A voice conversation in your browser, up to five minutes.</p>
-        </div>
-        {conversationId && <TeamLink conversationId={conversationId} teamName={site.team.name} />}
-        <div className="steps-in-panel">{howItWorks}</div>
+        <button className="ask-bar" type="button" onClick={startWidgetCall}>
+          <span className="ask-bar-text">
+            Tell {persona.name} what you&rsquo;re looking for: budget, bedrooms, parking, pets…
+          </span>
+          <span className="ask-bar-button">
+            <MicIcon />
+            Start talking
+          </span>
+        </button>
       </section>
 
-      <section className="homes" id="homes" aria-labelledby="homes-title">
-        <div className="homes-head">
-          <h2 id="homes-title">Residences available in {site.team.city}</h2>
-          <p className="live-status" role="status" aria-live="polite">
-            {active ? `Now discussing: ${active.title}` : ""}
-          </p>
-        </div>
-        <ul className={`listing-grid${active ? " has-active" : ""}`}>
-          {listings.map((listing) => (
-            <li key={listing.id}>
-              <ListingCard
-                listing={listing}
-                personaName={persona.name}
-                active={listing.id === activeId}
-                ref={(el) => registerCard(listing.id, el)}
-              />
-            </li>
-          ))}
-        </ul>
-      </section>
+      <div className="desk-body">
+        <section className="homes" id="homes" aria-labelledby="homes-title">
+          <div className="homes-head">
+            <h2 id="homes-title">
+              {listings.length} {listings.length === 1 ? "home" : "homes"} for rent in{" "}
+              {site.team.city}
+            </h2>
+            <p className="live-status" role="status" aria-live="polite">
+              {active ? `${persona.name} is talking about ${active.title}` : ""}
+            </p>
+          </div>
+          <ul className={`listing-grid${active ? " has-active" : ""}`}>
+            {listings.map((listing) => (
+              <li key={listing.id}>
+                <ListingCard
+                  listing={listing}
+                  personaName={persona.name}
+                  city={site.team.city}
+                  active={listing.id === activeId}
+                  ref={(el) => registerCard(listing.id, el)}
+                />
+              </li>
+            ))}
+          </ul>
+        </section>
 
-      {/* On small screens "how it works" follows the residences instead of pushing them down. */}
-      <div className="steps-after-homes">{howItWorks}</div>
+        <aside className="assistant" aria-labelledby="assistant-title">
+          <div className="assistant-card">
+            <div className="assistant-head">
+              <span className="assistant-orb" aria-hidden="true" />
+              <div>
+                <h2 id="assistant-title">Ask {persona.name}</h2>
+                <p>AI leasing assistant for {site.team.name}</p>
+              </div>
+            </div>
+            <button className="cta" type="button" onClick={startWidgetCall}>
+              <MicIcon />
+              Talk to {persona.name}
+            </button>
+            <p className="cta-note">Voice call in your browser, up to 5 minutes.</p>
+            {conversationId && (
+              <TeamLink conversationId={conversationId} teamName={site.team.name} />
+            )}
+            {howItWorks}
+          </div>
+        </aside>
+      </div>
 
       {showing && (
         <aside className="showing" aria-live="assertive" aria-labelledby="showing-title">
@@ -145,6 +166,15 @@ export function FrontDesk({ site, masthead, howItWorks }: FrontDeskProps) {
 }
 
 /** The door to the back office: what the leasing team gets from this renter's call. */
+function MicIcon() {
+  return (
+    <svg className="mic" viewBox="0 0 24 24" aria-hidden="true">
+      <rect x="9" y="3" width="6" height="11" rx="3" />
+      <path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21" />
+    </svg>
+  );
+}
+
 function TeamLink({
   conversationId,
   teamName,
@@ -165,13 +195,13 @@ function TeamLink({
   }
   return (
     <aside className="team-link" aria-label="Leasing team view">
-      <p className="team-link-title">Your conversation is being prepared for the leasing team</p>
+      <p className="team-link-title">See what {teamName} receives</p>
       <p>
-        After you hang up, see exactly what {teamName} receives: your details, a summary,
-        and a quality review of the call.
+        After you hang up, open the leasing team&rsquo;s view of this call: your details, a
+        summary, and a quality review.
       </p>
       <a href={href} target="_blank" rel="noopener">
-        View the leasing team&rsquo;s report
+        Open the leasing team view
       </a>
     </aside>
   );

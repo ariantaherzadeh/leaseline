@@ -34,6 +34,35 @@ def _parking(value: Parking | str) -> str:
     return f"{value.spots} {value.type or 'spot'}"
 
 
+def _stats(listing: Listing) -> list[dict[str, str]]:
+    """The 'bds | ba | sqft' line. Unconfirmed size is left out rather than shown as TBD."""
+    stats = [
+        {"value": str(listing.beds), "label": "bd" if listing.beds == 1 else "bds"},
+        {"value": f"{listing.baths:g}", "label": "ba"},
+    ]
+    if listing.sqft != TBD:
+        stats.append({"value": str(listing.sqft), "label": "sqft"})
+    return stats
+
+
+def _tags(listing: Listing) -> list[str]:
+    """Short feature tags for the card, only from confirmed facts."""
+    tags = []
+    if listing.available == "immediately":
+        tags.append("Available now")
+    if listing.pets not in (TBD, "No pets") and listing.pets.lower().startswith("pet friendly"):
+        tags.append("Pet friendly")
+    if isinstance(listing.parking, Parking) and listing.parking.spots:
+        tags.append(f"{listing.parking.spots} parking")
+    if listing.utilities_included:
+        tags.append(f"{' & '.join(listing.utilities_included).capitalize()} included")
+    if listing.laundry != TBD and "in" in listing.laundry.lower():
+        tags.append("In-unit laundry")
+    if listing.cooling not in (TBD, "None"):
+        tags.append("A/C")
+    return tags
+
+
 def listing_card(listing: Listing, persona_name: str) -> dict[str, Any]:
     included = ", ".join(listing.utilities_included).capitalize() or f"Ask {persona_name}"
     return {
@@ -42,6 +71,8 @@ def listing_card(listing: Listing, persona_name: str) -> dict[str, Any]:
         "neighbourhood": listing.neighbourhood,
         "rent": f"${listing.rent_monthly:,}",
         "layout": f"{listing.beds} bed, {listing.baths:g} bath",
+        "stats": _stats(listing),
+        "tags": _tags(listing),
         "highlights": listing.highlights[:3],
         "facts": [
             {"label": "Size", "value": _fact(listing.sqft, " sq ft")},

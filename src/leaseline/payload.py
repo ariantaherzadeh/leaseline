@@ -81,14 +81,14 @@ def _custom_guardrail(rule: dict[str, str]) -> dict[str, Any]:
     }
 
 
-BRASS = "#B08D57"  # matches --brass in web/src/app/globals.css
+ORB_LIGHT = "#8DB0F7"  # second orb colour: a lighter tint of the brand accent
 
 
 def widget_settings(tenant: Tenant) -> dict[str, Any]:
     """The embed widget reads its look and copy from the agent, not from HTML attributes."""
     name, accent = tenant.persona.name, tenant.brand.accent
     return {
-        "avatar": {"type": "orb", "color_1": accent, "color_2": BRASS},
+        "avatar": {"type": "orb", "color_1": accent, "color_2": ORB_LIGHT},
         "transcript_enabled": True,
         "text_contents": {
             "main_label": f"Talk to {name}",

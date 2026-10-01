@@ -5,11 +5,12 @@ import type { Listing } from "@/lib/site";
 type Props = {
   listing: Listing;
   personaName: string;
+  city: string;
   active: boolean;
   ref?: Ref<HTMLElement>;
 };
 
-export function ListingCard({ listing, personaName, active, ref }: Props) {
+export function ListingCard({ listing, personaName, city, active, ref }: Props) {
   const titleId = `title-${listing.id}`;
   return (
     <article
@@ -20,23 +21,35 @@ export function ListingCard({ listing, personaName, active, ref }: Props) {
       aria-current={active ? "true" : undefined}
     >
       <p className="tag" aria-hidden="true">
-        {personaName} is presenting this residence
+        {personaName} is talking about this home
       </p>
-      <div className="listing-intro">
-        <p className="hood">{listing.neighbourhood}</p>
-        <h3 id={titleId}>{listing.title}</h3>
-        <div className="listing-head">
-          <p className="rent">
-            <span className="rent-amount">{listing.rent}</span> per month
-          </p>
-          <p className="beds">{listing.layout}</p>
-        </div>
-        <ul className="highlights">
-          {listing.highlights.map((h) => (
-            <li key={h}>{h}</li>
+      <p className="price">
+        {listing.rent}
+        <span>/mo</span>
+      </p>
+      <ul className="stats" aria-label="Size">
+        {listing.stats.map((s) => (
+          <li key={s.label}>
+            <strong>{s.value}</strong> {s.label}
+          </li>
+        ))}
+      </ul>
+      <h3 id={titleId}>{listing.title}</h3>
+      <p className="hood">
+        {listing.neighbourhood}, {city}
+      </p>
+      {listing.tags.length > 0 && (
+        <ul className="chips" aria-label="Features">
+          {listing.tags.map((t) => (
+            <li key={t}>{t}</li>
           ))}
         </ul>
-      </div>
+      )}
+      <ul className="highlights">
+        {listing.highlights.map((h) => (
+          <li key={h}>{h}</li>
+        ))}
+      </ul>
       <dl className="facts">
         {listing.facts.map((f) => (
           <div key={f.label}>
