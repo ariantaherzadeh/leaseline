@@ -11,6 +11,8 @@ from leaseline.deploy import DeployError, apply_plan, check_plan, make_plan, rec
 from leaseline.loader import ValidationReport, validate_tenant
 from leaseline.render import AGENT_DIR, render_agent, write_build
 from leaseline.site import SiteError, export_site
+from leaseline.webhook import WebhookSetupError
+from leaseline.webhook import setup as setup_webhook
 
 app = typer.Typer(
     help="Sync LeaseLine tenants (agent config + listings) to ElevenLabs and build the site.",
@@ -152,3 +154,36 @@ def export_site_command(
         typer.secho(f"✗ {e}", fg=typer.colors.RED, bold=True, err=True)
         raise typer.Exit(code=1) from e
     typer.secho(f"✓ wrote {path} for {tenant}", fg=typer.colors.GREEN, bold=True)
+
+
+SUPABASE_PROJECT_REF = "lyplhlbjuhsigkurckqx"
+
+
+@app.command("setup-webhook")
+def setup_webhook_command(
+    project_ref: str = typer.Option(
+        SUPABASE_PROJECT_REF, "--project-ref", help="Supabase project."
+    ),
+    rotate: bool = typer.Option(False, "--rotate", help="Replace the webhook and its secret."),
+) -> None:
+    """Point ElevenLabs' post-call webhook at Supabase's ingest-lead function.
+
+    Needs ELEVENLABS_API_KEY and SUPABASE_ACCESS_TOKEN (a scoped personal access token) in .env.
+    The webhook secret goes straight from ElevenLabs to Supabase and is never printed.
+    """
+    client = _client()
+    token = os.environ.get("SUPABASE_ACCESS_TOKEN")
+    if not token:
+        typer.secho(
+            "SUPABASE_ACCESS_TOKEN is not set (add it to .env)", fg=typer.colors.RED, err=True
+        )
+        raise typer.Exit(code=2)
+    try:
+        result = setup_webhook(client, project_ref, token, rotate=rotate)
+    except WebhookSetupError as e:
+        typer.secho(f"✗ {e}", fg=typer.colors.RED, bold=True, err=True)
+        raise typer.Exit(code=1) from e
+    verb = "created" if result.created else "kept"
+    typer.echo(f"  {verb} webhook {result.webhook_id}")
+    typer.echo(f"  self-test: {result.self_test}")
+    typer.secho("✓ post-call webhook → ingest-lead", fg=typer.colors.GREEN, bold=True)
