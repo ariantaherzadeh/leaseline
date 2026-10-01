@@ -2,7 +2,6 @@
 <!-- What changed and why -->
 
 ## Type
-- [ ] New or updated listing
 - [ ] Agent prompt / config
 - [ ] Site
 - [ ] Tooling / CI
@@ -10,7 +9,7 @@
 
 ## Checklist
 - [ ] `uv run ruff check . && uv run pytest` passes locally
-- [ ] Listing changes: facts verified against the source listing; unknowns marked `TBD`, not guessed
+- [ ] Agent changes: facts come only from listings or the user; unknowns stay unknown, never guessed
 - [ ] No secrets committed (`.env` stays local)
 
 ## Test plan
