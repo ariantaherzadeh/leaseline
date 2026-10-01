@@ -9,13 +9,8 @@ type Listing = Tables<"listings">;
 
 const UNCONFIRMED = "Leave blank if not confirmed. Your assistant will say so instead of guessing.";
 
-function initialValues(listing?: Listing, prefill?: Record<string, string>): Record<string, string> {
-  if (!listing) {
-    const values: Record<string, string> = { status: "draft", city: "Ottawa", province: "ON", availability: "unconfirmed" };
-    for (const [key, value] of Object.entries(prefill ?? {})) if (value) values[key] = value;
-    if (prefill?.title && !values.slug) values.slug = slugify(prefill.title);
-    return values;
-  }
+function initialValues(listing?: Listing): Record<string, string> {
+  if (!listing) return { status: "draft", city: "Ottawa", province: "ON", availability: "unconfirmed" };
   const text = (v: unknown) => (v === null || v === undefined ? "" : String(v));
   return {
     id: listing.id,
@@ -56,17 +51,14 @@ function initialValues(listing?: Listing, prefill?: Record<string, string>): Rec
 export function ListingForm({
   listing,
   canEdit,
-  prefill,
 }: {
   listing?: Listing;
   canEdit: boolean;
-  /** Values from paste-to-fill, for a new listing. */
-  prefill?: Record<string, string>;
 }) {
   const [state, action, pending] = useActionState<ListingFormState, FormData>(saveListing, {
     errors: {},
   });
-  const v = state.values ?? initialValues(listing, prefill);
+  const v = state.values ?? initialValues(listing);
   const e = state.errors;
   const [slugTouched, setSlugTouched] = useState(Boolean(listing));
   const [slug, setSlug] = useState(v.slug ?? "");

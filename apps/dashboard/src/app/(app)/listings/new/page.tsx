@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
-import { NewListing } from "@/components/NewListing";
+import { ListingForm } from "@/components/ListingForm";
 import { getTeam } from "@/lib/team";
 
 export default async function NewListingPage() {
@@ -18,7 +18,7 @@ export default async function NewListingPage() {
           <p className="muted">Save as a draft first if you want to check it before it goes live.</p>
         </div>
       </div>
-      <NewListing />
+      <ListingForm canEdit />
     </>
   );
 }

@@ -4,7 +4,6 @@ import { fieldErrors, listingFormSchema } from "@leaseline/shared";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/server";
 import { getTeam } from "@/lib/team";
 
@@ -59,29 +58,4 @@ export async function deleteListing(form: FormData): Promise<void> {
   if (error) throw new Error(friendly(error.message));
   revalidatePath("/listings");
   redirect("/listings?deleted=1");
-}
-
-export type ExtractState = { values?: Record<string, string>; error?: string };
-
-/** Paste-to-fill: send pasted listing text to the extract-listing Edge Function (which checks
- * the caller is an editor) and return form values for review. Nothing is saved. */
-export async function extractListing(text: string): Promise<ExtractState> {
-  const supabase = await createClient();
-  // The session token is only forwarded; the Edge Function verifies it.
-  const { data } = await supabase.auth.getSession();
-  const token = data.session?.access_token;
-  if (!token) return { error: "Your session expired. Sign in again." };
-
-  const res = await fetch(`${SUPABASE_URL}/functions/v1/extract-listing`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      apikey: SUPABASE_PUBLISHABLE_KEY,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ text }),
-  });
-  const body = (await res.json().catch(() => ({}))) as { values?: Record<string, string>; error?: string };
-  if (!res.ok || !body.values) return { error: body.error ?? "Couldn't read that listing." };
-  return { values: body.values };
 }

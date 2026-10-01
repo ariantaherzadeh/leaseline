@@ -92,11 +92,9 @@ Needs `SUPABASE_ACCESS_TOKEN` (scoped to this project) in `.env`.
   Validation (`packages/shared/src/listing.ts`, zod) mirrors the table and the Python schema:
   a blank optional fact is saved as `NULL` ("not confirmed yet"); availability is now / a date /
   not confirmed; the URL name is generated from the title. Drafts stay private to the team.
-- **Paste-to-fill:** on *Add listing*, paste MLS text, an email or notes → Edge Function
-  `extract-listing` (signed-in editors only) asks Claude Opus 5.5 for structured output (zod
-  schema, every fact nullable, "never infer" system prompt, low effort, server-side refusal
-  fallback) → the form is pre-filled for review. Nothing is saved until the editor saves. Needs
-  `ANTHROPIC_API_KEY` as a Supabase function secret; without it the box says it isn't set up.
+- **Paste-to-fill (off for now):** the Edge Function `extract-listing` (Claude structured output,
+  signed-in editors only) is built and tested, but the dashboard doesn't call it until there's an
+  `ANTHROPIC_API_KEY` budget for it. Listings are added with the manual form.
 - **Nora:** the Python sync (`leaseline deploy`) reads published listings from Supabase
   (`src/leaseline/supabase_source.py`, publishable key, NULL → "not confirmed") and keeps the
   same stateless, hash-named KB docs, safe order and mass-delete guard. `deploy.yml` runs it on
