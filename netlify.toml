@@ -10,21 +10,7 @@
   NODE_VERSION = "22"
   LEASELINE_TENANT = "demo"
 
-[[headers]]
-  for = "/*"
-  [headers.values]
-    # The call widget needs the microphone on our own origin; nothing else does.
-    Permissions-Policy = "microphone=(self), camera=(), geolocation=()"
-    Referrer-Policy = "strict-origin-when-cross-origin"
-    X-Content-Type-Options = "nosniff"
-    X-Frame-Options = "DENY"
-
-[[headers]]
-  for = "/team*"
-  [headers.values]
-    X-Robots-Tag = "noindex"
-    Cache-Control = "no-store"
-
+# Security headers are set in apps/site/next.config.ts (they must cover server-rendered pages).
 # Netlify's Next.js runtime: serverless functions for /team and /api, prerendered pages on the CDN.
 [[plugins]]
   package = "@netlify/plugin-nextjs"
