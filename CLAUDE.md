@@ -42,6 +42,9 @@ AI voice leasing assistant ("Nora") on ElevenLabs Agents. The design and roadmap
 - After policy changes, run `supabase/tests/rls_test.sql`; every row must pass.
 - Regenerate `packages/shared/src/database.types.ts` after schema changes.
 - "Automatically expose new tables" is off: new tables need explicit grants.
+- Edge Functions live in `supabase/functions/<name>/` with pure logic in `lib.ts` and Deno tests in
+  `lib_test.ts` (`deno test --allow-env`). Deploy with the MCP `deploy_edge_function` tool.
+- `uv run leaseline setup-webhook`: connect ElevenLabs' post-call webhook to `ingest-lead`.
 
 ## Rules
 - Listing facts come only from the source listing or the user. Unknown → `TBD`, never guessed.

@@ -9,7 +9,7 @@
 | Phase | Outcome | Status |
 |---|---|---|
 | 0 | Monorepo: `apps/site`, `apps/dashboard`, `packages/shared`, `supabase/` | Done |
-| 1 | Leads reach the realtor: post-call webhook → Supabase → email; leads inbox | Planned |
+| 1 | Leads reach the realtor: post-call webhook → Supabase → email; leads inbox | In progress |
 | 2 | Non-developers manage listings in the dashboard; site + Nora read from Supabase | Planned |
 | 3 | Phone line + consented follow-up calls (Twilio) | Later |
 
@@ -61,10 +61,19 @@
 - Types: `packages/shared/src/database.types.ts`, generated from the live schema.
 
 ### Leads (phase 1)
-1. ElevenLabs post-call webhook → Supabase Edge Function `ingest-lead`.
-2. Verify the HMAC signature, then upsert the lead (idempotent on conversation id).
-3. If `RESEND_API_KEY` is set, email the tenant's team: name, contact, home, showing time, summary.
-4. The dashboard's inbox lists leads, newest first, with the transcript summary and checks.
+1. ElevenLabs post-call webhook → Supabase Edge Function **`ingest-lead`**
+   (`supabase/functions/ingest-lead`, `verify_jwt = false`).
+2. It verifies the HMAC header (`elevenlabs-signature: t=<unix>,v0=<hex>`, HMAC-SHA256 of
+   `"<unix>.<body>"`, 30-minute window, constant-time compare), maps the agent to a tenant via
+   `tenants.agent_id`, and upserts the lead on `conversation_id` (retries are idempotent).
+3. On the first delivery, if `RESEND_API_KEY` is set, it emails the tenant's `notify_email`
+   (or every team member): name, contact, showing time, recommendation, summary.
+4. The dashboard's inbox lists leads, newest first.
+
+**Setup:** `uv run leaseline setup-webhook` creates the ElevenLabs webhook, moves its one-time
+secret straight into Supabase's function secrets (Management API; never printed), attaches it as
+the workspace's post-call webhook, and self-tests the signature path with a signed request.
+Needs `SUPABASE_ACCESS_TOKEN` (scoped to this project) in `.env`.
 
 ### Listings (phase 2)
 - Dashboard: list, add, edit, archive, delete (with confirm); validation mirrors the Python
