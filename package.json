@@ -14,6 +14,7 @@
     "lint": "npm --workspaces --if-present run lint",
     "typecheck": "npm --workspaces --if-present run typecheck",
     "dev:dashboard": "npm --workspace @leaseline/dashboard run dev",
-    "build:dashboard": "npm --workspace @leaseline/dashboard run build"
+    "build:dashboard": "npm --workspace @leaseline/dashboard run build",
+    "test": "npm --workspaces --if-present run test"
   }
 }
