@@ -6,32 +6,20 @@ import { site } from "@/lib/site";
 export default function Home() {
   const { persona, team, brand } = site;
 
-  const masthead = (
-    <header className="masthead">
-      <Link className="wordmark" href="/" aria-label="LeaseLine home">
-        <svg viewBox="0 0 32 32" aria-hidden="true">
-          <circle cx="12" cy="16" r="5" />
-          <path d="M17 16h9M22 16v4" />
-        </svg>
-        LeaseLine
-      </Link>
-      {brand.coBrand && <p className="co-brand">{brand.coBrand}</p>}
-    </header>
-  );
-
   const howItWorks = (
     <div className="steps">
-      <h2>How a call goes</h2>
+      <h2>How it works</h2>
       <ol>
         <li>
-          <strong>Say what you&rsquo;re after.</strong> Budget, bedrooms, cars, pets, the feel you
-          want.
+          <strong>Tell {persona.name} what you need.</strong> Budget, bedrooms, parking, pets,
+          move-in date.
         </li>
         <li>
-          <strong>{persona.name} picks a home and explains why.</strong> Its card lights up here.
+          <strong>Get a recommendation.</strong> The best match is highlighted while{" "}
+          {persona.name} explains why.
         </li>
         <li>
-          <strong>Book a showing.</strong> Leave a name and number; {team.name} follows up.
+          <strong>Book a showing.</strong> Leave your name and number; {team.name} follows up.
         </li>
       </ol>
     </div>
@@ -42,8 +30,20 @@ export default function Home() {
       <a className="skip" href="#homes">
         Skip to homes
       </a>
+      <header className="topbar">
+        <Link className="wordmark" href="/" aria-label="LeaseLine home">
+          <svg viewBox="0 0 32 32" aria-hidden="true">
+            <rect width="32" height="32" rx="8" />
+            <circle cx="11" cy="16" r="5" />
+            <path d="M16 16h10M22 16v4M25.5 16v3" />
+          </svg>
+          LeaseLine
+        </Link>
+        {brand.coBrand && <p className="co-brand">{brand.coBrand}</p>}
+        <p className="topbar-note">Rentals in {team.city}</p>
+      </header>
       <main>
-        <FrontDesk site={site} masthead={masthead} howItWorks={howItWorks} />
+        <FrontDesk site={site} howItWorks={howItWorks} />
       </main>
       <footer className="footer">
         <p>

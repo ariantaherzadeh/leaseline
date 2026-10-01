@@ -1,28 +1,22 @@
-/* LeaseLine: Nora's front desk.
-   One loud moment: the amber key tag + glow on the home Nora is talking about.
-   Everything else stays quiet. */
+/* LeaseLine: a clean, modern rental marketplace.
+   White and light grey, one sans-serif, one accent colour. The accent marks actions and the
+   home Nora is currently talking about; nothing else competes with it. */
 
 :root {
-  --fog: #e9efec;       /* page: cool canal fog */
-  --paper: #fbfcfb;     /* card surface */
-  --ink: #15261f;       /* text: deep spruce */
-  --muted: #56655f;
-  --line: #cfd9d4;
-  --brand: #0e7c66;     /* overridden per tenant on <html> */
-  --key: #f2b233;       /* key-tag amber: "Nora is talking about this" */
-  --key-ink: #3d2a00;
-  --danger: #a3261b;
+  --bg: #ffffff;
+  --surface: #f6f7f9;     /* page sections, chips */
+  --text: #1b1f27;
+  --muted: #5d6573;
+  --line: #e2e5ea;
+  --accent: #1554d6;      /* overridden per tenant via --brand */
+  --accent-soft: #eaf0fd;
+  --danger: #b4231a;
+  --brand: var(--accent);
 
-  --display: var(--font-display), "Avenir Next", system-ui, sans-serif;
-  --body: var(--font-body), system-ui, sans-serif;
-
-  --step-0: 1.0625rem;
-  --step-1: 1.3rem;
-  --step-2: 1.75rem;
-  --step-3: clamp(2.4rem, 6vw, 4.6rem);
-
-  --gutter: clamp(16px, 5vw, 64px);
-  --measure: 38rem;
+  --sans: var(--font-sans), system-ui, -apple-system, "Segoe UI", sans-serif;
+  --radius: 12px;
+  --gutter: clamp(16px, 4vw, 40px);
+  --max: 1280px;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -31,241 +25,250 @@ html { color-scheme: light; }
 
 body {
   margin: 0;
-  background: var(--fog);
-  color: var(--ink);
-  font: 400 var(--step-0)/1.6 var(--body);
+  background: var(--bg);
+  color: var(--text);
+  font: 400 1rem/1.55 var(--sans);
   -webkit-font-smoothing: antialiased;
 }
 
-h1, h2, h3 { font-family: var(--display); font-weight: 700; line-height: 1.1; margin: 0; }
+h1, h2, h3 { margin: 0; line-height: 1.2; }
 p { margin: 0; }
-a { color: inherit; }
+a { color: var(--brand); }
+strong { font-weight: 700; }
 
-:focus-visible { outline: 3px solid var(--brand); outline-offset: 3px; border-radius: 4px; }
+:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; border-radius: 4px; }
 
 .skip {
-  position: absolute; left: var(--gutter); top: -3rem;
-  background: var(--ink); color: var(--paper); padding: .5rem .9rem; border-radius: 6px;
+  position: absolute; left: var(--gutter); top: -3rem; z-index: 20;
+  background: var(--text); color: #fff; padding: .5rem .9rem; border-radius: 8px;
 }
-.skip:focus { top: 1rem; }
+.skip:focus { top: .75rem; }
 
-/* ---- layout: the desk ----
-   Mobile: one column; the call bar pins to the bottom of the screen during a call.
-   Desktop: a left panel (intro + call) that stays put, homes on the right, all above the fold. */
-.desk { display: grid; }
+.mic { width: 1.15em; height: 1.15em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; }
 
-/* Mobile: flatten the panel so "how it works" can follow the homes instead of pushing them
-   down. Order: masthead, intro, call, homes, then how it works. */
-@media (max-width: 1023.98px) {
-  .panel { display: contents; }
-  .panel > * { margin-inline: var(--gutter); }
-  .masthead { order: 1; margin-top: 1.25rem; }
-  .panel h1 { order: 2; }
-  .lede { order: 3; }
-  .cta-row, .team-link { order: 4; }
-  .homes { order: 5; padding: 2.25rem var(--gutter) 1rem; }
-  .steps { order: 6; margin-bottom: 2rem; }
+/* ---- top bar ---- */
+.topbar {
+  position: sticky; top: 0; z-index: 15;
+  display: flex; align-items: center; gap: 1.5rem;
+  height: 64px; padding: 0 var(--gutter);
+  background: color-mix(in srgb, var(--bg) 94%, transparent);
+  backdrop-filter: saturate(1.4) blur(8px);
+  border-bottom: 1px solid var(--line);
 }
-
-@media (min-width: 1024px) {
-  .desk {
-    grid-template-columns: minmax(24rem, 34rem) minmax(0, 1fr);
-    align-items: start;
-    min-height: 100vh;
-  }
-  .panel {
-    position: sticky; top: 0;
-    min-height: 100vh;
-    display: flex; flex-direction: column;
-    padding: 2rem clamp(2rem, 3vw, 3rem) 2rem var(--gutter);
-    border-right: 1px solid var(--line);
-  }
-  .homes { padding: 5.25rem var(--gutter) 3rem clamp(2rem, 3vw, 3rem); }
-}
-
-/* ---- masthead ---- */
-.masthead { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
 .wordmark {
   display: inline-flex; align-items: center; gap: .55rem;
-  font: 800 1.35rem/1 var(--display); letter-spacing: -.02em; text-decoration: none;
+  font-weight: 800; font-size: 1.2rem; letter-spacing: -.02em;
+  color: var(--text); text-decoration: none;
 }
-.wordmark svg { width: 1.9rem; height: 1.9rem; fill: none; stroke: var(--brand); stroke-width: 3; stroke-linecap: round; }
-.co-brand { color: var(--muted); font-size: .95rem; }
+.wordmark svg { width: 30px; height: 30px; }
+.wordmark rect { fill: var(--brand); }
+.wordmark circle, .wordmark path { fill: none; stroke: #fff; stroke-width: 2.6; stroke-linecap: round; }
+.co-brand { color: var(--muted); font-size: .9rem; }
+.topbar-note { margin-left: auto; color: var(--muted); font-size: .9rem; font-weight: 500; }
 
-/* ---- intro + call ---- */
-.panel h1 {
-  margin-top: clamp(1.75rem, 5vh, 3.5rem);
-  font-size: clamp(2.1rem, 3.4vw + .8rem, 3.4rem);
+/* ---- page frame ---- */
+.desk { max-width: var(--max); margin: 0 auto; padding: 0 var(--gutter); }
+
+/* ---- intro + ask bar ---- */
+.intro { padding: clamp(1.75rem, 4vw, 2.75rem) 0 clamp(1.5rem, 3vw, 2rem); }
+.intro h1 {
+  font-size: clamp(1.75rem, 2.4vw + .9rem, 2.6rem);
   font-weight: 800;
-  letter-spacing: -.035em;
-  max-width: 14ch;
+  letter-spacing: -.03em;
+  max-width: 22ch;
   text-wrap: balance;
 }
-.lede {
-  margin-top: 1rem;
-  max-width: var(--measure);
-  font-size: 1.125rem;
-  line-height: 1.55;
-  color: var(--muted);
-}
-.cta-row { margin-top: 1.75rem; display: flex; flex-wrap: wrap; align-items: center; gap: .75rem 1.25rem; }
-.cta {
-  display: inline-flex; align-items: center; justify-content: center; gap: .75rem;
-  min-width: 12.5rem;
-  padding: 1rem 1.6rem 1rem 1.25rem;
-  border: 0; border-radius: 999px;
-  background: var(--brand); color: #fff;
-  font: 700 1.15rem/1 var(--display); letter-spacing: -.01em;
-  cursor: pointer;
-  transition: transform .15s ease, background-color .15s ease;
-}
-.cta:hover { background: color-mix(in srgb, var(--brand) 85%, black); }
-.cta:active { transform: scale(.98); }
-.cta:disabled { cursor: progress; opacity: .8; }
-.cta-dot {
-  flex: none;
-  width: .7rem; height: .7rem; border-radius: 50%; background: var(--key);
-  animation: ring 2.4s ease-out infinite;
-}
-@keyframes ring {
-  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--key) 60%, transparent); }
-  70%, 100% { box-shadow: 0 0 0 .7rem transparent; }
-}
-.cta-note { color: var(--muted); font-size: .95rem; }
+.lede { margin-top: .6rem; max-width: 46rem; color: var(--muted); font-size: 1.05rem; }
 
-/* ---- homes ---- */
-.homes-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .25rem 1rem; margin-bottom: 1.25rem; }
-.homes h2 { font-size: var(--step-2); letter-spacing: -.02em; }
-.live-status { color: var(--brand); font-weight: 700; }
+.ask-bar {
+  margin-top: 1.4rem;
+  display: flex; align-items: center; gap: 1rem;
+  width: min(100%, 46rem);
+  padding: .45rem .45rem .45rem 1.25rem;
+  border: 1px solid var(--line); border-radius: 999px;
+  background: var(--bg);
+  box-shadow: 0 1px 2px rgb(16 24 40 / .06), 0 6px 18px -8px rgb(16 24 40 / .12);
+  font: inherit; text-align: left; cursor: pointer;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.ask-bar:hover { border-color: color-mix(in srgb, var(--brand) 45%, var(--line)); }
+.ask-bar-text { flex: 1; min-width: 0; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ask-bar-button {
+  flex: none;
+  display: inline-flex; align-items: center; gap: .45rem;
+  padding: .7rem 1.15rem; border-radius: 999px;
+  background: var(--brand); color: #fff; font-weight: 600;
+}
+
+/* ---- listings + assistant ---- */
+.desk-body {
+  display: grid; gap: 2rem;
+  padding-bottom: 3rem;
+}
+@media (min-width: 1024px) {
+  .desk-body { grid-template-columns: minmax(0, 1fr) 21rem; align-items: start; }
+  .assistant { position: sticky; top: calc(64px + 1.25rem); }
+}
+
+.homes-head {
+  display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .25rem 1rem;
+  margin-bottom: 1rem;
+}
+.homes h2 { font-size: 1.15rem; font-weight: 700; }
+.live-status { color: var(--brand); font-weight: 600; font-size: .95rem; }
 
 .listing-grid {
   list-style: none; margin: 0; padding: 0;
-  display: grid; gap: clamp(1rem, 3vw, 2rem);
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+  display: grid; gap: 1.25rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
 }
 .listing-grid > li { display: flex; }
 
 .listing {
   position: relative;
-  scroll-margin: 6rem 0 9rem;
   flex: 1;
-  background: var(--paper);
+  background: var(--bg);
   border: 1px solid var(--line);
-  border-radius: 18px;
-  padding: 1.75rem 1.75rem 1.5rem;
-  transition: border-color .25s ease, box-shadow .35s ease, transform .35s ease, opacity .35s ease;
+  border-radius: var(--radius);
+  padding: 1.25rem 1.25rem 1.1rem;
+  scroll-margin: 6rem 0 7rem;
+  transition: border-color .2s ease, box-shadow .2s ease, opacity .25s ease;
 }
-.listing-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
-.rent { color: var(--muted); }
-.rent-amount {
-  font: 800 clamp(2.2rem, 4.5vw, 2.9rem)/1 var(--display);
-  letter-spacing: -.03em; color: var(--ink);
-}
-.beds { font-weight: 700; }
-.listing h3 { margin-top: 1.1rem; font-size: var(--step-1); letter-spacing: -.01em; }
-.hood { color: var(--muted); margin-top: .2rem; }
+.price { font-size: 1.65rem; font-weight: 800; letter-spacing: -.02em; }
+.price span { font-size: 1rem; font-weight: 600; color: var(--muted); margin-left: .1rem; }
 
-.highlights { margin: 1.1rem 0 0; padding-left: 1.1rem; }
-.highlights li { margin: .25rem 0; }
-.highlights li::marker { color: var(--brand); }
+.stats { list-style: none; margin: .25rem 0 0; padding: 0; display: flex; flex-wrap: wrap; color: var(--text); }
+.stats li + li::before { content: "|"; color: var(--line); margin: 0 .55rem; }
+
+.listing h3 { margin-top: .45rem; font-size: 1rem; font-weight: 600; }
+.hood { color: var(--muted); font-size: .92rem; }
+
+.chips { list-style: none; margin: .85rem 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: .4rem; }
+.chips li {
+  padding: .22rem .6rem; border-radius: 6px;
+  background: var(--surface); color: var(--text);
+  font-size: .8rem; font-weight: 600;
+}
+
+.highlights { margin: .9rem 0 0; padding-left: 1.1rem; color: var(--muted); font-size: .92rem; }
+.highlights li + li { margin-top: .15rem; }
 
 .facts {
-  margin: 1.4rem 0 0;
-  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: .9rem 1.25rem;
-  padding-top: 1.2rem; border-top: 1px dashed var(--line);
+  margin: 1rem 0 0; padding-top: .9rem;
+  border-top: 1px solid var(--line);
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .65rem 1rem;
 }
-.facts dt { font-size: .85rem; color: var(--muted); }
-.facts dd { margin: 0; font-weight: 700; }
+@media (max-width: 420px) { .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.facts dt { font-size: .75rem; color: var(--muted); }
+.facts dd { margin: 0; font-size: .88rem; font-weight: 600; }
 
-/* The key tag: hidden until Nora talks about this home. */
+/* "Nora is talking about this home": the one accent moment. */
 .tag {
-  position: absolute; top: -.85rem; left: 1.4rem;
-  display: inline-flex; align-items: center; gap: .45rem;
-  padding: .3rem .8rem .3rem .6rem;
-  background: var(--key); color: var(--key-ink);
-  border-radius: 999px;
-  font: 700 .85rem/1.2 var(--body);
-  opacity: 0; transform: translateY(.4rem);
-  transition: opacity .25s ease, transform .25s ease;
+  position: absolute; top: -.7rem; left: 1rem;
+  display: inline-flex; align-items: center; gap: .4rem;
+  padding: .2rem .6rem; border-radius: 999px;
+  background: var(--brand); color: #fff;
+  font-size: .75rem; font-weight: 700;
+  opacity: 0; transform: translateY(.25rem);
+  transition: opacity .2s ease, transform .2s ease;
   pointer-events: none;
 }
 .tag::before {
-  content: ""; width: .5rem; height: .5rem; border-radius: 50%; background: var(--key-ink);
-  animation: talk 1s ease-in-out infinite alternate;
+  content: ""; width: .4rem; height: .4rem; border-radius: 50%; background: #fff;
+  animation: talk .8s ease-in-out infinite alternate;
 }
-@keyframes talk { from { transform: scale(.6); } to { transform: scale(1.15); } }
-
+@keyframes talk { from { opacity: .4; } to { opacity: 1; } }
 .listing.is-active {
-  border-color: var(--key);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--key) 45%, transparent),
-              0 18px 40px -18px color-mix(in srgb, var(--key-ink) 45%, transparent);
-  transform: translateY(-4px);
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px var(--accent-soft), 0 10px 30px -14px rgb(16 24 40 / .25);
 }
 .listing.is-active .tag { opacity: 1; transform: none; }
-.listing-grid.has-active .listing:not(.is-active) { opacity: .62; }
+.listing-grid.has-active .listing:not(.is-active) { opacity: .55; }
 
-/* ---- how it works (in the panel) ---- */
-.steps { margin-top: 2.25rem; padding-top: 1.5rem; border-top: 1px dashed var(--line); }
-@media (min-width: 1024px) { .steps { margin-top: auto; } }
-.steps h2 { font-size: 1.05rem; letter-spacing: -.01em; }
-.steps ol { margin: .9rem 0 0; padding: 0; list-style: none; counter-reset: step; display: grid; gap: .7rem; }
+/* ---- assistant card ---- */
+.assistant-card {
+  border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 1.25rem;
+  background: var(--bg);
+  box-shadow: 0 1px 2px rgb(16 24 40 / .05), 0 12px 32px -18px rgb(16 24 40 / .18);
+}
+.assistant-head { display: flex; align-items: center; gap: .8rem; }
+.assistant-orb {
+  flex: none; width: 44px; height: 44px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #8db0f7, var(--brand) 70%);
+}
+.assistant-head h2 { font-size: 1.1rem; font-weight: 700; }
+.assistant-head p { color: var(--muted); font-size: .88rem; }
+
+.cta {
+  margin-top: 1rem;
+  display: flex; align-items: center; justify-content: center; gap: .5rem;
+  width: 100%; padding: .85rem 1rem;
+  border: 0; border-radius: 10px;
+  background: var(--brand); color: #fff;
+  font: 600 1rem/1 var(--sans); cursor: pointer;
+  transition: background-color .15s ease;
+}
+.cta:hover { background: color-mix(in srgb, var(--brand) 86%, black); }
+.cta-note { margin-top: .5rem; text-align: center; color: var(--muted); font-size: .82rem; }
+
+.steps { margin-top: 1.25rem; padding-top: 1.1rem; border-top: 1px solid var(--line); }
+.steps h2 { font-size: .95rem; font-weight: 700; }
+.steps ol { margin: .7rem 0 0; padding: 0; list-style: none; counter-reset: step; display: grid; gap: .7rem; }
 .steps li {
   counter-increment: step;
-  display: grid; grid-template-columns: 1.6rem 1fr; column-gap: .5rem;
-  color: var(--muted); font-size: .98rem; line-height: 1.45;
+  display: grid; grid-template-columns: 1.6rem 1fr; column-gap: .55rem;
+  color: var(--muted); font-size: .88rem; line-height: 1.45;
 }
 .steps li::before {
   content: counter(step);
   grid-row: span 2;
-  font: 800 1.25rem/1.15 var(--display); color: var(--brand);
+  display: grid; place-items: center;
+  width: 1.6rem; height: 1.6rem; border-radius: 50%;
+  background: var(--accent-soft); color: var(--brand);
+  font-size: .8rem; font-weight: 700;
 }
-.steps strong { color: var(--ink); }
+.steps strong { color: var(--text); font-weight: 600; }
+
+/* ---- link to the leasing team view (appears once a call is underway) ---- */
+.team-link {
+  margin-top: 1rem; padding: .9rem 1rem;
+  border-radius: 10px; background: var(--accent-soft);
+  animation: arrive .3s ease-out;
+}
+.team-link-title { font-weight: 700; font-size: .95rem; }
+.team-link p + p { margin-top: .2rem; color: var(--muted); font-size: .86rem; }
+.team-link a { display: inline-block; margin-top: .5rem; font-weight: 600; font-size: .9rem; }
+.team-link-inline { display: inline-block; margin-top: .75rem; font-weight: 600; }
 
 /* ---- showing confirmation ---- */
 .showing {
-  position: fixed; left: var(--gutter); bottom: 1.5rem; z-index: 10;
-  width: min(26rem, calc(100vw - 2 * var(--gutter)));
-  background: var(--paper); border: 2px solid var(--brand); border-radius: 18px;
-  padding: 1.4rem 1.5rem;
-  box-shadow: 0 24px 48px -20px color-mix(in srgb, var(--ink) 55%, transparent);
-  animation: arrive .4s cubic-bezier(.2, .8, .2, 1);
+  position: fixed; left: var(--gutter); bottom: 1.25rem; z-index: 10;
+  width: min(25rem, calc(100vw - 2 * var(--gutter)));
+  background: var(--bg); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 1.15rem 1.25rem;
+  box-shadow: 0 20px 48px -16px rgb(16 24 40 / .3);
+  animation: arrive .3s ease-out;
 }
-/* On phones the call widget spans the bottom; sit the confirmation above it. */
-@media (max-width: 640px) { .showing { top: 1rem; bottom: auto; } }
-.showing h2 { font-size: var(--step-1); color: var(--brand); }
-.showing p { margin-top: .5rem; }
-.showing-follow { color: var(--muted); }
+.showing h2 { font-size: 1.1rem; font-weight: 700; color: var(--brand); }
+.showing p { margin-top: .4rem; }
+.showing-follow { color: var(--muted); font-size: .92rem; }
 .showing-close {
-  margin-top: 1rem; padding: .5rem 1rem; border-radius: 999px;
-  border: 1px solid var(--line); background: transparent; color: var(--ink);
-  font: 700 .95rem/1 var(--body); cursor: pointer;
+  margin-top: .9rem; padding: .5rem .95rem; border-radius: 8px;
+  border: 1px solid var(--line); background: var(--bg); color: var(--text);
+  font: 600 .9rem/1 var(--sans); cursor: pointer;
 }
-@keyframes arrive { from { opacity: 0; transform: translateY(1rem); } }
+@keyframes arrive { from { opacity: 0; transform: translateY(.5rem); } }
+@media (max-width: 640px) { .showing { top: calc(64px + .75rem); bottom: auto; } }
 
 /* ---- footer ---- */
-.footer { padding: 1.5rem var(--gutter) 7rem; /* room for the call widget */ color: var(--muted); font-size: .9rem; border-top: 1px solid var(--line); }
-.footer p { max-width: 60rem; }
+.footer {
+  background: var(--surface); border-top: 1px solid var(--line);
+  padding: 1.5rem var(--gutter) 6.5rem; /* room for the call widget */
+  color: var(--muted); font-size: .85rem;
+}
+.footer p { max-width: var(--max); margin: 0 auto; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
-
-/* ---- link to the leasing team's back office (appears once a call is underway) ---- */
-.team-link {
-  margin-top: 1.25rem;
-  max-width: var(--measure);
-  padding: 1rem 1.1rem;
-  background: var(--ink); color: var(--fog);
-  border-radius: 14px;
-  animation: arrive .4s cubic-bezier(.2, .8, .2, 1);
-}
-.team-link-title { font: 700 1.05rem/1.3 var(--display); color: var(--key); }
-.team-link p + p { margin-top: .3rem; color: color-mix(in srgb, var(--fog) 80%, transparent); font-size: .95rem; }
-.team-link a {
-  display: inline-block; margin-top: .75rem;
-  padding: .55rem 1rem; border-radius: 999px;
-  background: var(--key); color: var(--key-ink);
-  font-weight: 700; text-decoration: none;
-}
-.team-link-inline { display: inline-block; margin-top: .75rem; color: var(--brand); font-weight: 700; }

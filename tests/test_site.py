@@ -75,3 +75,24 @@ def test_cli_export_site(tmp_path: Path) -> None:
     )
     assert result.exit_code == 0, result.output
     assert out.is_file()
+
+
+def test_card_stats_and_tags(demo) -> None:
+    tenant, listings = demo
+    gladstone, icon = site_data(tenant, listings)["listings"]
+    assert gladstone["stats"] == [
+        {"value": "2", "label": "bds"},
+        {"value": "1", "label": "ba"},
+        {"value": "700", "label": "sqft"},
+    ]
+    assert gladstone["tags"] == [
+        "Available now",
+        "Pet friendly",
+        "2 parking",
+        "Heat & water included",
+        "In-unit laundry",
+    ]
+    # Unconfirmed availability and restricted pets never become tags.
+    assert "Available now" not in icon["tags"]
+    assert "Pet friendly" not in icon["tags"]
+    assert "A/C" in icon["tags"]

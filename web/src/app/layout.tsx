@@ -1,20 +1,14 @@
 import type { Metadata, Viewport } from "next";
-import { Atkinson_Hyperlegible, Bricolage_Grotesque } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
 
 import { site } from "@/lib/site";
 
 import "./globals.css";
 
-const display = Bricolage_Grotesque({
+const sans = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  weight: ["500", "700", "800"],
-  variable: "--font-display",
-});
-
-const body = Atkinson_Hyperlegible({
-  subsets: ["latin"],
-  weight: ["400", "700"],
-  variable: "--font-body",
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-sans",
 });
 
 export const metadata: Metadata = {
@@ -30,7 +24,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html
       lang="en"
-      className={`${display.variable} ${body.variable}`}
+      className={sans.variable}
       style={{ "--brand": site.brand.accent } as React.CSSProperties}
     >
       <body>{children}</body>

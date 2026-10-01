@@ -3,8 +3,12 @@ import data from "@/data/site.json";
 
 export type Fact = { label: string; value: string };
 
+export type Stat = { value: string; label: string };
+
 export type Listing = {
   id: string;
+  stats: Stat[];
+  tags: string[];
   title: string;
   neighbourhood: string;
   rent: string;
