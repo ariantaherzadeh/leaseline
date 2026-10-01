@@ -4,7 +4,7 @@ import { type ReactNode, useCallback, useEffect, useRef, useState } from "react"
 
 import { type ClientTools, ConvaiWidget, startWidgetCall } from "@/components/ConvaiWidget";
 import { ListingCard } from "@/components/ListingCard";
-import type { Site } from "@/lib/site";
+import type { Listing, Site } from "@/lib/site";
 
 type ShowingRequest = {
   listing_id: string;
@@ -15,12 +15,13 @@ type ShowingRequest = {
 
 type FrontDeskProps = {
   site: Site;
+  listings: Listing[];
   /** Static, server-rendered "how it works" for the assistant card. */
   howItWorks: ReactNode;
 };
 
-export function FrontDesk({ site, howItWorks }: FrontDeskProps) {
-  const { persona, listings } = site;
+export function FrontDesk({ site, listings, howItWorks }: FrontDeskProps) {
+  const { persona } = site;
   const [activeId, setActiveId] = useState<string | null>(null);
   const [showing, setShowing] = useState<ShowingRequest | null>(null);
   const [conversationId, setConversationId] = useState<string | null>(null);

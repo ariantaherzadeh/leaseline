@@ -14,10 +14,9 @@ __pycache__/
 .coverage
 htmlcov/
 
-# Build output
-build/
-dist/
-site/
+# Build output (root-level only; apps/site is source code)
+/build/
+/dist/
 
 # Vendored agent skills (restore with: npx skills experimental_install)
 .claude/skills/

@@ -1,0 +1,21 @@
+# Copy this folder to tenants/<your-slug>/ to onboard a new customer.
+slug: your-slug # must match the folder name
+agent_id: null # leave null; the first deploy creates the agent
+
+team:
+  name: the leasing team # how the assistant refers to the humans it hands off to
+  city: Your City
+
+persona:
+  name: Nora
+  voice_id: hpp4J3VqNfWAUOO0d1Us # any ElevenLabs voice id
+
+brand:
+  accent: "#1554D6"
+  co_brand: null # optional text line, e.g. "for Jane Doe, REALTOR®"; never a logo
+
+domains: # bare hostnames allowed to embed the agent; the first is the primary domain
+  - your-site.netlify.app
+  - localhost
+
+follow_up: Someone from the leasing team will reach out within one business day.

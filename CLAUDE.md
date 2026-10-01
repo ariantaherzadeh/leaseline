@@ -13,7 +13,8 @@ AI voice leasing assistant ("Nora") on ElevenLabs Agents. The design and roadmap
 - `uv run ruff format . && uv run ruff check .`: format and lint
 - `uv run pytest`: tests (offline; never hit the ElevenLabs API)
 - `uv run leaseline --help`: CLI
-- `uv run leaseline validate -t demo`: check listings
+- `uv run leaseline validate -t demo`: check the tenant config + published listings in Supabase
+  (`--source files` reads `tests/fixtures/tenants/<slug>/listings/` instead; tests use that)
 - `uv run leaseline render -t demo`: write the prompt, KB docs and tools to `build/demo/` for review
 - `uv run leaseline deploy -t demo --dry-run`: show what would change on ElevenLabs (drop `--dry-run` to apply)
 - `npm run dev:site`: the Next.js site on http://localhost:3000 (exports site data first;
@@ -50,7 +51,8 @@ AI voice leasing assistant ("Nora") on ElevenLabs Agents. The design and roadmap
 - `uv run leaseline setup-webhook`: connect ElevenLabs' post-call webhook to `ingest-lead`.
 
 ## Rules
-- Listing facts come only from the source listing or the user. Unknown → `TBD`, never guessed.
+- Listings are data in Supabase, edited in the dashboard; never hard-code them. Facts come only
+  from the source listing or the user. Unknown → NULL (`TBD` in the Python model), never guessed.
 - Anything that writes to ElevenLabs supports `--dry-run`.
 - `ELEVENLABS_API_KEY` lives in `.env` (gitignored) locally and as a GitHub secret in CI. Never
   print it.

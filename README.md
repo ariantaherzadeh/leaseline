@@ -14,8 +14,9 @@ from verified listing data, and books a showing with the leasing team.
 
 - **Agent as code.** The agent's prompt, config and listings live in this repo. A Python CLI syncs
   them to ElevenLabs.
-- **Git is the admin panel.** Add a listing by opening a PR with one Markdown file. CI validates it,
-  and on merge Nora and the website both update.
+- **Non-developers manage listings.** The leasing team adds and edits homes in the dashboard
+  (Supabase); the site updates within a minute and Nora learns them within ten.
+- **Agent as code.** Nora's prompt, voice and guardrails live in this repo and deploy through PRs.
 - **A real front desk.** A Next.js site on Netlify embeds the ElevenLabs widget; as Nora talks,
   the home she recommends lights up. The agent is locked to the site's domain.
 - **The leasing team's side.** After a call, open the back-office view to see the lead, summary
