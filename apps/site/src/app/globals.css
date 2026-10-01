@@ -106,8 +106,12 @@ strong { font-weight: 700; }
   padding-bottom: 3rem;
 }
 @media (min-width: 1024px) {
-  .desk-body { grid-template-columns: minmax(0, 1fr) 21rem; align-items: start; }
-  .assistant { position: sticky; top: calc(64px + 1.25rem); }
+  /* Two rows: the homes heading, then the cards. The assistant sits in the second row so its
+     top lines up with the cards, not the heading. */
+  .desk-body { grid-template-columns: minmax(0, 1fr) 21rem; align-items: start; row-gap: 1rem; }
+  .homes { grid-row: span 2; display: grid; grid-template-rows: subgrid; }
+  .desk-body .homes-head { margin-bottom: 0; }
+  .assistant { grid-row: 2; grid-column: 2; position: sticky; top: calc(64px + 1.25rem); }
 }
 
 .homes-head {
