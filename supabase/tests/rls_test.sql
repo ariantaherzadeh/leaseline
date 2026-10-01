@@ -44,6 +44,12 @@ update public.listings set rent_monthly = 1 where slug = 'pub-test';
 reset role;
 insert into results select 'stranger could not edit', rent_monthly = 1000, rent_monthly::text from public.listings where slug = 'pub-test';
 
+set local role anon;
+insert into results select 'anon gets one call by id', public.call_result('conv_rlstest000001') is not null, coalesce(public.call_result('conv_rlstest000001') ->> 'renter_name', 'null');
+insert into results select 'anon gets nothing for an unknown id', public.call_result('conv_nosuchcall0001') is null, coalesce(public.call_result('conv_nosuchcall0001')::text, 'null');
+reset role;
+insert into results select 'only anon can call call_result', not has_function_privilege('authenticated', 'public.call_result(text)', 'execute'), has_function_privilege('authenticated', 'public.call_result(text)', 'execute')::text;
+
 select * from results order by passed, check_name;
 rollback;
 

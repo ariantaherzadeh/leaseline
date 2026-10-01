@@ -70,6 +70,10 @@
    (or every team member): name, contact, showing time, recommendation, summary.
 4. The dashboard's inbox lists leads, newest first; each lead has its details, summary, the
    three call-quality checks, and a status (new / contacted / closed) plus notes for follow-up.
+5. The lead row also stores the spoken transcript. The public site's `/team` demo page reads the
+   caller's own call from the database through `call_result(conversation_id)` (a
+   `SECURITY DEFINER` function granted to `anon` only; it returns one call by its id and never
+   lists leads). The site therefore holds no secrets: it doesn't call the ElevenLabs API at all.
 
 ### Dashboard (`apps/dashboard`, app.tryleaseline.com)
 - Next.js 16 + `@supabase/ssr`. `src/proxy.ts` refreshes the session on every request and

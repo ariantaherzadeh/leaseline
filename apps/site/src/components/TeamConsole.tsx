@@ -45,7 +45,7 @@ export function TeamConsole({
         if (cancelled) return;
         if (!res.ok) return setState({ kind: "error", message: body.error });
         const view = body as TeamView;
-        if (view.status === "done" || view.status === "failed") {
+        if (view.status === "done") {
           return setState({ kind: "ready", view });
         }
         setState({ kind: "waiting", view });
@@ -87,14 +87,12 @@ export function TeamConsole({
   }
 
   if (state.kind === "waiting") {
-    const live = state.view?.status === "in-progress" || state.view?.status === "initiated";
     return (
       <section className="panel-card empty" aria-live="polite">
-        <h1>{live ? "The call is still going" : "Screening the call"}</h1>
+        <h1>Screening the call</h1>
         <p>
-          {live
-            ? `End the call with ${personaName} and the results appear here automatically.`
-            : "ElevenLabs is analysing the conversation. This usually takes under a minute."}
+          When you end the call with {personaName}, ElevenLabs analyses it and sends the result to
+          the leasing team. It appears here automatically, usually within a minute.
         </p>
         <div className="pulse" aria-hidden="true" />
       </section>

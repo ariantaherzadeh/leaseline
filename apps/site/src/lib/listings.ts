@@ -5,8 +5,8 @@ import { type ListingRow, toListingCard } from "@leaseline/shared";
 
 import { type Listing, site } from "@/lib/site";
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "https://lyplhlbjuhsigkurckqx.supabase.co";
-const SUPABASE_PUBLISHABLE_KEY =
+export const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "https://lyplhlbjuhsigkurckqx.supabase.co";
+export const SUPABASE_PUBLISHABLE_KEY =
   process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ?? "sb_publishable_GoSBclQLRWtKdjTJNfIXsw_wXTx1Fgx";
 
 export const LISTINGS_REVALIDATE_SECS = 60;

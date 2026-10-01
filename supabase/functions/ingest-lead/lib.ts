@@ -19,8 +19,18 @@ export type PostCallEvent = {
       evaluation_criteria_results?: Evaluation;
     };
     metadata?: { start_time_unix_secs?: number; call_duration_secs?: number };
+    transcript?: { role?: string; message?: string | null; time_in_call_secs?: number }[];
   };
 };
+
+/** The spoken turns only (no tool calls or empty messages), in a compact shape. */
+export function transcriptFromEvent(event: PostCallEvent) {
+  return (event.data.transcript ?? []).flatMap((t) =>
+    (t.role === "agent" || t.role === "user") && t.message
+      ? [{ role: t.role, message: t.message, at_secs: t.time_in_call_secs ?? 0 }]
+      : [],
+  );
+}
 
 function toHex(buf: ArrayBuffer): string {
   return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("");
@@ -99,5 +109,6 @@ export function leadFromEvent(event: PostCallEvent, tenantId: string) {
     data_collection: dc,
     duration_secs: d.metadata?.call_duration_secs ?? null,
     started_at: started ? new Date(started * 1000).toISOString() : null,
+    transcript: transcriptFromEvent(event),
   };
 }
