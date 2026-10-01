@@ -80,5 +80,7 @@ def test_configure_auth_is_invite_only(monkeypatch: pytest.MonkeyPatch) -> None:
     seen = fake_supabase(monkeypatch)
     settings = Project("ref", "pat").configure_auth()
     assert settings["disable_signup"] is True
-    assert "https://app.tryleaseline.com/auth/callback" in settings["uri_allow_list"]
+    allowed = settings["uri_allow_list"].split(",")
+    assert "https://app.tryleaseline.com/auth/callback" in allowed
+    assert "https://leaseline-app.netlify.app/auth/callback" in allowed
     assert "PATCH /v1/projects/ref/config/auth" in seen
