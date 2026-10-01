@@ -60,8 +60,13 @@ def _format_validation_error(err: ValidationError) -> str:
     )
 
 
-def validate_tenant(tenant_dir: Path) -> ValidationReport:
-    """Load a tenant folder, collecting every problem instead of stopping at the first."""
+def validate_tenant(
+    tenant_dir: Path, listings: list[Listing] | None = None, listing_errors: list[str] | None = None
+) -> ValidationReport:
+    """Load a tenant folder, collecting every problem instead of stopping at the first.
+
+    Listings come from `listings` when given (e.g. read from Supabase), otherwise from the
+    folder's `listings/*.md` files (used by tests and offline work)."""
     report = ValidationReport()
 
     tenant_file = tenant_dir / "tenant.yaml"
@@ -78,11 +83,16 @@ def validate_tenant(tenant_dir: Path) -> ValidationReport:
                 f"{tenant_file}: slug {report.tenant.slug!r} must match folder {tenant_dir.name!r}"
             )
 
+    if listings is not None:
+        report.errors.extend(listing_errors or [])
+        _check_listings(report, [(None, listing) for listing in listings])
+        return report
+
     paths = listing_paths(tenant_dir)
     if not paths:
         report.errors.append(f"{tenant_dir / 'listings'}: no listings found")
 
-    seen: dict[str, Path] = {}
+    loaded: list[tuple[Path | None, Listing]] = []
     for path in paths:
         try:
             listing = load_listing(path)
@@ -94,13 +104,20 @@ def validate_tenant(tenant_dir: Path) -> ValidationReport:
             continue
         if listing.id != path.stem:
             report.errors.append(f"{path}: id {listing.id!r} must match filename {path.stem!r}")
+        loaded.append((path, listing))
+    _check_listings(report, loaded)
+    return report
+
+
+def _check_listings(report: ValidationReport, loaded: list[tuple[Path | None, Listing]]) -> None:
+    seen: dict[str, str] = {}
+    for path, listing in loaded:
+        where = str(path) if path else f"listing {listing.id!r}"
         if listing.id in seen:
             report.errors.append(
-                f"{path}: duplicate id {listing.id!r} (also in {seen[listing.id]})"
+                f"{where}: duplicate id {listing.id!r} (also in {seen[listing.id]})"
             )
-        seen[listing.id] = path
+        seen[listing.id] = where
         for name in listing.tbd_fields():
-            report.warnings.append(f"{path}: {name} is TBD (the assistant will offer a follow-up)")
+            report.warnings.append(f"{where}: {name} is not confirmed (the assistant will say so)")
         report.listings.append(listing)
-
-    return report

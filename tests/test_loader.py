@@ -7,7 +7,7 @@ from leaseline.cli import app
 from leaseline.loader import LoadError, split_front_matter, validate_tenant
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-TENANTS = REPO_ROOT / "tenants"
+TENANTS = REPO_ROOT / "tests" / "fixtures" / "tenants"
 TEMPLATE = TENANTS / "_template"
 
 runner = CliRunner()
@@ -140,11 +140,15 @@ def test_bad_domain_is_rejected(tmp_path: Path) -> None:
 
 
 def test_cli_validate_ok() -> None:
-    result = runner.invoke(app, ["validate", "--tenant", "demo", "--root", str(TENANTS)])
+    result = runner.invoke(
+        app, ["validate", "--tenant", "demo", "--root", str(TENANTS), "--source", "files"]
+    )
     assert result.exit_code == 0, result.output
     assert "2 listing(s) valid" in result.output
 
 
 def test_cli_validate_fails(tmp_path: Path) -> None:
-    result = runner.invoke(app, ["validate", "--tenant", "missing", "--root", str(tmp_path)])
+    result = runner.invoke(
+        app, ["validate", "--tenant", "missing", "--root", str(tmp_path), "--source", "files"]
+    )
     assert result.exit_code == 1

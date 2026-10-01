@@ -12,6 +12,7 @@ from leaseline.loader import ValidationReport, validate_tenant
 from leaseline.render import AGENT_DIR, render_agent, write_build
 from leaseline.site import SiteError, export_site
 from leaseline.supabase_admin import Project, SupabaseAdminError
+from leaseline.supabase_source import SourceError, fetch_listings
 from leaseline.webhook import WebhookSetupError
 from leaseline.webhook import setup as setup_webhook
 
@@ -41,11 +42,28 @@ RootOption = typer.Option(Path("tenants"), "--root", help="Directory containing 
 
 
 AgentDirOption = typer.Option(AGENT_DIR, "--agent-dir", help="Shared prompt and config.")
+SourceOption = typer.Option(
+    "supabase",
+    "--source",
+    help="Where listings come from: 'supabase' (published listings; the source of truth) or "
+    "'files' (tenants/<slug>/listings/*.md, for tests and offline work).",
+)
 
 
-def _load_or_exit(tenant: str, root: Path) -> ValidationReport:
+def _load_or_exit(tenant: str, root: Path, source: str = "files") -> ValidationReport:
     """Validate a tenant, printing problems. Exits non-zero if it has errors."""
-    report = validate_tenant(root / tenant)
+    if source == "supabase":
+        try:
+            listings, listing_errors = fetch_listings(tenant)
+        except SourceError as e:
+            typer.secho(f"✗ {e}", fg=typer.colors.RED, bold=True, err=True)
+            raise typer.Exit(code=1) from e
+        report = validate_tenant(root / tenant, listings, listing_errors)
+    elif source == "files":
+        report = validate_tenant(root / tenant)
+    else:
+        typer.secho(f"✗ unknown --source {source!r}", fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=2)
     for warning in report.warnings:
         typer.secho(f"warning  {warning}", fg=typer.colors.YELLOW)
     for error in report.errors:
@@ -57,9 +75,11 @@ def _load_or_exit(tenant: str, root: Path) -> ValidationReport:
 
 
 @app.command()
-def validate(tenant: str = TenantOption, root: Path = RootOption) -> None:
-    """Check a tenant's config and listings. Exits non-zero on errors; TBD fields are warnings."""
-    report = _load_or_exit(tenant, root)
+def validate(
+    tenant: str = TenantOption, root: Path = RootOption, source: str = SourceOption
+) -> None:
+    """Check a tenant's config and listings. Exits non-zero on errors; unconfirmed facts warn."""
+    report = _load_or_exit(tenant, root, source)
     typer.secho(
         f"✓ {tenant}: {len(report.listings)} listing(s) valid, {len(report.warnings)} warning(s)",
         fg=typer.colors.GREEN,
@@ -73,9 +93,10 @@ def render(
     root: Path = RootOption,
     agent_dir: Path = AgentDirOption,
     out: Path = typer.Option(Path("build"), "--out", help="Output directory."),
+    source: str = SourceOption,
 ) -> None:
     """Render the prompt, first message, KB docs and tools to build/<tenant>/ for review."""
-    report = _load_or_exit(tenant, root)
+    report = _load_or_exit(tenant, root, source)
     assert report.tenant is not None
     rendered = render_agent(report.tenant, report.listings, agent_dir)
     for path in write_build(rendered, out / tenant):
@@ -113,9 +134,11 @@ def deploy(
     allow_mass_delete: bool = typer.Option(
         False, "--allow-mass-delete", help="Allow removing more than half of the listings."
     ),
+    source: str = SourceOption,
 ) -> None:
-    """Sync a tenant's agent and knowledge base to ElevenLabs so they match the repo."""
-    report = _load_or_exit(tenant, root)
+    """Sync a tenant's agent and knowledge base to ElevenLabs (config from the repo, listings
+    from Supabase)."""
+    report = _load_or_exit(tenant, root, source)
     assert report.tenant is not None
     rendered = render_agent(report.tenant, report.listings, agent_dir)
     client = _client()
@@ -146,11 +169,15 @@ def export_site_command(
         Path("apps/site/src/data/site.json"), "--out", help="Where the Next.js site reads its data."
     ),
 ) -> None:
-    """Export a tenant's listings and branding as JSON for the Next.js site (apps/site)."""
-    report = _load_or_exit(tenant, root)
-    assert report.tenant is not None
+    """Export a tenant's branding and assistant settings as JSON for the Next.js site. The site
+    reads listings from Supabase itself."""
+    report = validate_tenant(root / tenant, listings=[])
+    if report.tenant is None:
+        for error in report.errors:
+            typer.secho(f"error    {error}", fg=typer.colors.RED, err=True)
+        raise typer.Exit(code=1)
     try:
-        path = export_site(report.tenant, report.listings, out)
+        path = export_site(report.tenant, out)
     except SiteError as e:
         typer.secho(f"✗ {e}", fg=typer.colors.RED, bold=True, err=True)
         raise typer.Exit(code=1) from e

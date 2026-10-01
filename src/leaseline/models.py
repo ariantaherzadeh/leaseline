@@ -67,7 +67,7 @@ class Listing(_Strict):
     transit: str | None = None
     highlights: list[str] = []
     source: Source | None = None
-    body: str = Field(min_length=1, description="Markdown prose after the front matter.")
+    body: str = Field(default="", description="Markdown prose: what the agent should know.")
 
     def tbd_fields(self) -> list[str]:
         """Names of fields that are still unconfirmed."""

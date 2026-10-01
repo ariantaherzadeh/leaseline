@@ -9,8 +9,8 @@
 | Phase | Outcome | Status |
 |---|---|---|
 | 0 | Monorepo: `apps/site`, `apps/dashboard`, `packages/shared`, `supabase/` | Done |
-| 1 | Leads reach the realtor: post-call webhook → Supabase → email; leads inbox | In progress |
-| 2 | Non-developers manage listings in the dashboard; site + Nora read from Supabase | Planned |
+| 1 | Leads reach the realtor: post-call webhook → Supabase → email; leads inbox | Done (needs setup tokens) |
+| 2 | Non-developers manage listings in the dashboard; site + Nora read from Supabase | Done (paste-to-fill next) |
 | 3 | Phone line + consented follow-up calls (Twilio) | Later |
 
 ## Architecture
@@ -94,12 +94,19 @@ Needs `SUPABASE_ACCESS_TOKEN` (scoped to this project) in `.env`.
   not confirmed; the URL name is generated from the title. Drafts stay private to the team.
 - **Paste-to-fill:** paste a listing description; an Edge Function asks Claude to extract the
   fields; the team reviews before saving.
-- On change, a database trigger dispatches the **Python** sync workflow (`leaseline deploy`),
-  which now reads listings from Supabase. Same stateless, hash-named KB docs, same safe order,
-  same mass-delete guard.
-- The public site reads published listings from Supabase (revalidated every minute).
-- The agent prompt no longer lists listing ids; homes come only from the knowledge base, so
-  listing changes never require a prompt change.
+- **Nora:** the Python sync (`leaseline deploy`) reads published listings from Supabase
+  (`src/leaseline/supabase_source.py`, publishable key, NULL → "not confirmed") and keeps the
+  same stateless, hash-named KB docs, safe order and mass-delete guard. `deploy.yml` runs it on
+  every merge and **every 10 minutes**, so dashboard edits reach Nora within ~10 minutes (a
+  no-op run when nothing changed; it also keeps the free Supabase project awake). An instant
+  trigger on save (database → `workflow_dispatch`) can be added with a scoped GitHub token.
+- **The prompt no longer lists homes**, and `show_listing` has no id enum: homes come only from
+  the knowledge base (each starts with its Listing ID), so listing changes never touch the
+  prompt or tools.
+- **Public site:** reads published listings from Supabase at render time with ISR
+  (`revalidate = 60`), formatted by `packages/shared/src/card.ts` (ported from the old Python
+  export, same output, tested). Dashboard edits are live on the site within a minute.
+- The original listing files now live in `tests/fixtures/` (offline tests use `--source files`).
 
 ### Follow-up calls (phase 3, later)
 Consent captured on the call → SMS-verified number → scheduled outbound call via Twilio with

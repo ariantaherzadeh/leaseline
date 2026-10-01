@@ -9,7 +9,7 @@ from leaseline.render import NOT_CONFIRMED, RenderedAgent, kb_doc_name, render_a
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 AGENT_DIR = REPO_ROOT / "agent"
-TENANTS = REPO_ROOT / "tenants"
+TENANTS = REPO_ROOT / "tests" / "fixtures" / "tenants"
 
 runner = CliRunner()
 
@@ -25,12 +25,12 @@ def kb(rendered: RenderedAgent, listing_id: str) -> str:
     return next(d.text for d in rendered.kb_docs if d.listing_id == listing_id)
 
 
-def test_prompt_is_personalised_and_lists_every_home(rendered: RenderedAgent) -> None:
+def test_prompt_is_personalised_and_listing_free(rendered: RenderedAgent) -> None:
     assert "You are Nora" in rendered.prompt
     assert "the leasing team" in rendered.prompt
-    assert "`gladstone-920-1`" in rendered.prompt
-    assert "`icon-805-carling-1105`" in rendered.prompt
-    assert "$2,695/month" in rendered.prompt
+    # Homes come only from the knowledge base, so listing changes never touch the prompt.
+    assert "gladstone" not in rendered.prompt.lower()
+    assert "$2,695" not in rendered.prompt
 
 
 def test_prompt_has_the_non_negotiables(rendered: RenderedAgent) -> None:
@@ -72,11 +72,13 @@ def test_kb_doc_names_change_only_when_content_changes() -> None:
     assert a.startswith("leaseline/demo/x@")
 
 
-def test_client_tools_only_accept_real_listing_ids(rendered: RenderedAgent) -> None:
+def test_client_tools_take_ids_from_the_knowledge_base(rendered: RenderedAgent) -> None:
     tools = {t["name"]: t for t in rendered.client_tools}
     assert set(tools) == {"show_listing", "show_showing_request"}
-    enum = tools["show_listing"]["parameters"]["properties"]["listing_id"]["enum"]
-    assert enum == ["gladstone-920-1", "icon-805-carling-1105"]
+    listing_id = tools["show_listing"]["parameters"]["properties"]["listing_id"]
+    assert "enum" not in listing_id
+    assert "Listing ID" in listing_id["description"]
+    assert "Listing ID: gladstone-920-1" in kb(rendered, "gladstone-920-1")
 
 
 def test_write_build_removes_stale_kb_docs(rendered: RenderedAgent, tmp_path: Path) -> None:
@@ -103,6 +105,8 @@ def test_cli_render(tmp_path: Path) -> None:
             str(AGENT_DIR),
             "--out",
             str(tmp_path),
+            "--source",
+            "files",
         ],
     )
     assert result.exit_code == 0, result.output
