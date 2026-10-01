@@ -10,7 +10,7 @@
 |---|---|---|
 | 0 | Monorepo: `apps/site`, `apps/dashboard`, `packages/shared`, `supabase/` | Done |
 | 1 | Leads reach the realtor: post-call webhook → Supabase → email; leads inbox | Done (needs setup tokens) |
-| 2 | Non-developers manage listings in the dashboard; site + Nora read from Supabase | Done (paste-to-fill next) |
+| 2 | Non-developers manage listings in the dashboard; site + Nora read from Supabase | Done |
 | 3 | Phone line + consented follow-up calls (Twilio) | Later |
 
 ## Architecture
@@ -92,8 +92,11 @@ Needs `SUPABASE_ACCESS_TOKEN` (scoped to this project) in `.env`.
   Validation (`packages/shared/src/listing.ts`, zod) mirrors the table and the Python schema:
   a blank optional fact is saved as `NULL` ("not confirmed yet"); availability is now / a date /
   not confirmed; the URL name is generated from the title. Drafts stay private to the team.
-- **Paste-to-fill:** paste a listing description; an Edge Function asks Claude to extract the
-  fields; the team reviews before saving.
+- **Paste-to-fill:** on *Add listing*, paste MLS text, an email or notes → Edge Function
+  `extract-listing` (signed-in editors only) asks Claude Opus 5.5 for structured output (zod
+  schema, every fact nullable, "never infer" system prompt, low effort, server-side refusal
+  fallback) → the form is pre-filled for review. Nothing is saved until the editor saves. Needs
+  `ANTHROPIC_API_KEY` as a Supabase function secret; without it the box says it isn't set up.
 - **Nora:** the Python sync (`leaseline deploy`) reads published listings from Supabase
   (`src/leaseline/supabase_source.py`, publishable key, NULL → "not confirmed") and keeps the
   same stateless, hash-named KB docs, safe order and mass-delete guard. `deploy.yml` runs it on

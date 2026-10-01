@@ -141,3 +141,8 @@ input[aria-invalid="true"] { border-color: var(--bad); }
 .notice + .table-wrap, .notice + .empty { margin-top: 1rem; }
 .table tr.is-highlighted td { background: var(--accent-soft); }
 .history ul { margin: 0; padding-left: 1.1rem; display: grid; gap: .35rem; font-size: .9rem; }
+
+/* ---- paste-to-fill ---- */
+.paste { margin-bottom: 1rem; }
+.paste textarea { margin-top: .75rem; }
+.paste-actions { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin-top: .75rem; }

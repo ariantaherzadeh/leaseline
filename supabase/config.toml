@@ -417,3 +417,7 @@ enabled = true
 # ElevenLabs post-call webhook. Authenticated by HMAC in code (ElevenLabs can't send a JWT).
 [functions.ingest-lead]
 verify_jwt = false
+
+# Paste-to-fill for the dashboard. Requires a signed-in user (JWT); editors only, checked in code.
+[functions.extract-listing]
+verify_jwt = true
