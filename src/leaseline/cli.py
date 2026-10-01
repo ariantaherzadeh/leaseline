@@ -11,6 +11,7 @@ from leaseline.deploy import DeployError, apply_plan, check_plan, make_plan, rec
 from leaseline.loader import ValidationReport, validate_tenant
 from leaseline.render import AGENT_DIR, render_agent, write_build
 from leaseline.site import SiteError, export_site
+from leaseline.supabase_admin import Project, SupabaseAdminError
 from leaseline.webhook import WebhookSetupError
 from leaseline.webhook import setup as setup_webhook
 
@@ -187,3 +188,48 @@ def setup_webhook_command(
     typer.echo(f"  {verb} webhook {result.webhook_id}")
     typer.echo(f"  self-test: {result.self_test}")
     typer.secho("✓ post-call webhook → ingest-lead", fg=typer.colors.GREEN, bold=True)
+
+
+def _supabase_token() -> str:
+    load_dotenv()
+    token = os.environ.get("SUPABASE_ACCESS_TOKEN")
+    if not token:
+        typer.secho(
+            "SUPABASE_ACCESS_TOKEN is not set (add a project-scoped token to .env)",
+            fg=typer.colors.RED,
+            err=True,
+        )
+        raise typer.Exit(code=2)
+    return token
+
+
+@app.command("configure-auth")
+def configure_auth_command(
+    project_ref: str = typer.Option(SUPABASE_PROJECT_REF, "--project-ref"),
+) -> None:
+    """Make dashboard login invite-only and allow its callback URLs."""
+    try:
+        settings = Project(project_ref, _supabase_token()).configure_auth()
+    except SupabaseAdminError as e:
+        typer.secho(f"✗ {e}", fg=typer.colors.RED, bold=True, err=True)
+        raise typer.Exit(code=1) from e
+    typer.echo(f"  sign-up disabled, site URL {settings['site_url']}")
+    typer.echo(f"  allowed redirects: {settings['uri_allow_list']}")
+    typer.secho("✓ auth configured", fg=typer.colors.GREEN, bold=True)
+
+
+@app.command("add-member")
+def add_member_command(
+    email: str = typer.Argument(..., help="Their work email (they sign in with a link sent here)."),
+    tenant: str = typer.Option("demo", "--tenant", "-t"),
+    role: str = typer.Option("editor", "--role", help="admin, editor, or viewer."),
+    project_ref: str = typer.Option(SUPABASE_PROJECT_REF, "--project-ref"),
+) -> None:
+    """Give someone access to a tenant's dashboard (creates their login if needed)."""
+    try:
+        user_id, created = Project(project_ref, _supabase_token()).add_member(email, tenant, role)
+    except SupabaseAdminError as e:
+        typer.secho(f"✗ {e}", fg=typer.colors.RED, bold=True, err=True)
+        raise typer.Exit(code=1) from e
+    typer.echo(f"  {'created' if created else 'found'} user {user_id}")
+    typer.secho(f"✓ {email} is now {role} of {tenant}", fg=typer.colors.GREEN, bold=True)

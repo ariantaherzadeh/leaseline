@@ -12,6 +12,8 @@
     "dev:site": "npm --workspace @leaseline/site run dev",
     "build:site": "npm --workspace @leaseline/site run build",
     "lint": "npm --workspaces --if-present run lint",
-    "typecheck": "npm --workspaces --if-present run typecheck"
+    "typecheck": "npm --workspaces --if-present run typecheck",
+    "dev:dashboard": "npm --workspace @leaseline/dashboard run dev",
+    "build:dashboard": "npm --workspace @leaseline/dashboard run build"
   }
 }

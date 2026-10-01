@@ -68,7 +68,19 @@
    `tenants.agent_id`, and upserts the lead on `conversation_id` (retries are idempotent).
 3. On the first delivery, if `RESEND_API_KEY` is set, it emails the tenant's `notify_email`
    (or every team member): name, contact, showing time, recommendation, summary.
-4. The dashboard's inbox lists leads, newest first.
+4. The dashboard's inbox lists leads, newest first; each lead has its details, summary, the
+   three call-quality checks, and a status (new / contacted / closed) plus notes for follow-up.
+
+### Dashboard (`apps/dashboard`, app.tryleaseline.com)
+- Next.js 16 + `@supabase/ssr`. `src/proxy.ts` refreshes the session on every request and
+  sends signed-out visitors to `/login`.
+- Login: email magic link (`signInWithOtp`, `shouldCreateUser: false`) → `/auth/callback`
+  exchanges the PKCE code for a session cookie. Same response whether or not the email is on a
+  team, so the form can't be used to discover members.
+- Every query runs as the signed-in user with the publishable key; RLS decides access.
+- Admin tasks run from the CLI with a project-scoped `SUPABASE_ACCESS_TOKEN`:
+  `leaseline configure-auth` (sign-up off, redirect allow-list) and
+  `leaseline add-member <email> --role admin|editor|viewer`.
 
 **Setup:** `uv run leaseline setup-webhook` creates the ElevenLabs webhook, moves its one-time
 secret straight into Supabase's function secrets (Management API; never printed), attaches it as
