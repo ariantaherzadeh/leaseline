@@ -2,6 +2,7 @@
 // Only fields the team needs leave the server; the API key never does.
 import "server-only";
 
+import { getListings } from "@/lib/listings";
 import { site } from "@/lib/site";
 
 const API = "https://api.elevenlabs.io/v1/convai/conversations";
@@ -90,7 +91,7 @@ export async function getTeamView(id: string): Promise<TeamView> {
     durationSecs: raw.metadata?.call_duration_secs ?? null,
     startedAt: raw.metadata?.start_time_unix_secs ?? null,
     recommendedHome:
-      site.listings.find((l) => l.id === recommendedId)?.title ??
+      (await getListings()).find((l) => l.id === recommendedId)?.title ??
       (recommendedId ? String(recommendedId) : null),
     lead: LEAD_FIELDS.flatMap(([key, label, format]) => {
       const v = value(key);

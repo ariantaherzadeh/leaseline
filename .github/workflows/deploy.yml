@@ -1,10 +1,15 @@
 name: Deploy ElevenLabs
 
-# Every merge to main syncs ElevenLabs (agent + knowledge base) for each tenant.
-# The site itself is built by Netlify's Git integration on the same push (and previewed on PRs).
+# Syncs ElevenLabs (agent + knowledge base) for each tenant: agent config from the repo,
+# published listings from Supabase. Runs on every merge to main, and every 10 minutes so
+# listings edited in the dashboard reach the assistant without a code change (the run is a
+# no-op when nothing changed; it also keeps the free Supabase project from pausing).
+# The public site is built by Netlify's Git integration and reads listings from Supabase itself.
 on:
   push:
     branches: [main]
+  schedule:
+    - cron: "*/10 * * * *"
   workflow_dispatch:
 
 permissions:
@@ -32,7 +37,7 @@ jobs:
         env:
           ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
           # Removing more than half of a tenant's listings needs an explicit opt-in.
-          ALLOW_MASS_DELETE: ${{ contains(github.event.head_commit.message, '[allow-mass-delete]') }}
+          ALLOW_MASS_DELETE: ${{ github.event_name == 'push' && contains(github.event.head_commit.message, '[allow-mass-delete]') }}
         run: |
           flag=""
           [[ "$ALLOW_MASS_DELETE" == "true" ]] && flag="--allow-mass-delete"

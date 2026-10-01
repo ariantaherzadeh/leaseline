@@ -234,6 +234,10 @@ The demo's answer to "what does the realtor get?", without a database or integra
 
 ## 9. Git-driven operations (no admin UI)
 
+> **Superseded for listings by [DESIGN-v2.md](DESIGN-v2.md):** listings now live in Supabase and
+> are managed in the dashboard. The agent's prompt, voice and config still deploy from git as
+> described here.
+
 **The repo is the admin interface.** Listings are added, changed or removed only by pushing to
 GitHub. There is no dashboard or form.
 

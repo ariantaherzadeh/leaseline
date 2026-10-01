@@ -1,0 +1,23 @@
+# LeaseLine demo tenant. Nora works for "the leasing team", with no realtor branding.
+slug: demo
+agent_id: agent_2801m3svx7v2fz8sc70agxh2ts8q # written once by the first `leaseline deploy`, then committed (it's public)
+
+team:
+  name: the leasing team
+  city: Ottawa
+
+persona:
+  name: Nora
+  voice_id: hpp4J3VqNfWAUOO0d1Us # ElevenLabs premade "Bella - Professional, Bright, Warm" (American)
+
+brand:
+  accent: "#1554D6"
+  co_brand: null
+
+domains: # first entry is the primary (canonical) domain
+  - tryleaseline.com
+  - www.tryleaseline.com
+  - leaseline.netlify.app
+  - localhost
+
+follow_up: Someone from the leasing team will reach out within one business day.

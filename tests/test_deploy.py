@@ -15,7 +15,9 @@ AGENT_DIR = REPO_ROOT / "agent"
 @pytest.fixture
 def tenant_dir(tmp_path: Path) -> Path:
     """A writable copy of the demo tenant, not yet deployed (agent_id reset)."""
-    tenant_dir = Path(shutil.copytree(REPO_ROOT / "tenants" / "demo", tmp_path / "demo"))
+    tenant_dir = Path(
+        shutil.copytree(REPO_ROOT / "tests" / "fixtures" / "tenants" / "demo", tmp_path / "demo")
+    )
     record_agent_id(tenant_dir / "tenant.yaml", "null")
     return tenant_dir
 

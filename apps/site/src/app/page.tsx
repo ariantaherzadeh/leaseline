@@ -1,10 +1,15 @@
 import Link from "next/link";
 
 import { FrontDesk } from "@/components/FrontDesk";
+import { getListings } from "@/lib/listings";
 import { site } from "@/lib/site";
 
-export default function Home() {
+// Re-check Supabase for listing changes at most once a minute (ISR).
+export const revalidate = 60;
+
+export default async function Home() {
   const { persona, team, brand } = site;
+  const listings = await getListings();
 
   const howItWorks = (
     <div className="steps">
@@ -43,7 +48,7 @@ export default function Home() {
         <p className="topbar-note">Rentals in {team.city}</p>
       </header>
       <main>
-        <FrontDesk site={site} howItWorks={howItWorks} />
+        <FrontDesk site={site} listings={listings} howItWorks={howItWorks} />
       </main>
       <footer className="footer">
         <p>

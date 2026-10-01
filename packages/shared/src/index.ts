@@ -19,3 +19,4 @@ export type ListingCard = {
 export type { Database, Enums, Json, Tables, TablesInsert, TablesUpdate } from "./database.types";
 export { Constants } from "./database.types";
 export * from "./listing";
+export * from "./card";

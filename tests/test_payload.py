@@ -13,7 +13,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 def payloads() -> tuple[dict, dict]:
     from leaseline.render import render_agent
 
-    report = validate_tenant(REPO_ROOT / "tenants" / "demo")
+    report = validate_tenant(REPO_ROOT / "tests" / "fixtures" / "tenants" / "demo")
     rendered = render_agent(report.tenant, report.listings, REPO_ROOT / "agent")
     kb_ids = {doc.name: f"doc_{i}" for i, doc in enumerate(rendered.kb_docs)}
     return conversation_config(report.tenant, rendered, kb_ids), platform_settings(

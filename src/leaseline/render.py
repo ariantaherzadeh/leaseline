@@ -76,13 +76,13 @@ def kb_doc_name(tenant_slug: str, listing_id: str, text: str) -> str:
     return f"leaseline/{tenant_slug}/{listing_id}@{content_hash(text)}"
 
 
-def client_tools(listings: list[Listing]) -> list[dict[str, Any]]:
+def client_tools() -> list[dict[str, Any]]:
     """Browser-side tools the page implements (see site/app.js)."""
-    listing_ids = [listing.id for listing in listings]
+    # No enum: listings change in the dashboard without redeploying tools. The page ignores ids
+    # it doesn't show, and the knowledge base gives the model the exact ids.
     listing_id_param = {
         "type": "string",
-        "enum": listing_ids,
-        "description": "The id of the listing, exactly as given in your instructions.",
+        "description": "The home's Listing ID, exactly as written in the knowledge base.",
     }
     # Filled in by ElevenLabs, not the model: lets the page open this call's leasing-team view.
     conversation_id_param = {"type": "string", "dynamic_variable": "system__conversation_id"}
@@ -153,7 +153,7 @@ def render_agent(
         prompt=env.get_template("prompt.md.j2").render(context).strip() + "\n",
         first_message=env.get_template("first_message.j2").render(context).strip(),
         kb_docs=kb_docs,
-        client_tools=client_tools(listings),
+        client_tools=client_tools(),
         config=yaml.safe_load((agent_dir / "config.yaml").read_text(encoding="utf-8")),
     )
 
