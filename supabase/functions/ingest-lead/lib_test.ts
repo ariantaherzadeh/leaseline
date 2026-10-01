@@ -63,9 +63,18 @@ Deno.test("maps a post-call event to a lead row", () => {
         evaluation_criteria_results: { collected_contact: { result: "success", rationale: "ok" } },
       },
       metadata: { start_time_unix_secs: 1_790_000_000, call_duration_secs: 87 },
+      transcript: [
+        { role: "agent", message: "Hi, I'm Nora.", time_in_call_secs: 0 },
+        { role: "agent", message: null, time_in_call_secs: 4 },
+        { role: "user", message: "Two bedrooms, please.", time_in_call_secs: 5 },
+      ],
     },
   };
   const lead = leadFromEvent(event, "tenant-1");
+  assertEquals(lead.transcript, [
+    { role: "agent", message: "Hi, I'm Nora.", at_secs: 0 },
+    { role: "user", message: "Two bedrooms, please.", at_secs: 5 },
+  ]);
   assertEquals(lead.tenant_id, "tenant-1");
   assertEquals(lead.renter_name, "Jane");
   assertEquals(lead.recommended_listing_slug, "gladstone-920-1");

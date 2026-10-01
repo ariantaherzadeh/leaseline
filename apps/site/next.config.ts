@@ -1,12 +1,8 @@
-import { existsSync } from "node:fs";
 import type { NextConfig } from "next";
 
-// Local dev: share the repo-root .env (ELEVENLABS_API_KEY) with the Python CLI.
-// On Netlify the key comes from the site's environment variables instead.
-if (existsSync("../../.env")) process.loadEnvFile("../../.env");
-
-// Served by Netlify's Next.js runtime: the pages are prerendered, and one API route
-// (/api/conversations/[id]) runs server-side so the ElevenLabs API key stays off the client.
+// Served by Netlify's Next.js runtime: the pages are prerendered (listings refresh every minute),
+// and one API route (/api/conversations/[id]) reads a call's result from Supabase. The site
+// needs no secrets: it only uses Supabase's publishable key.
 const securityHeaders = [
   // The call widget needs the microphone on our own origin; nothing else does.
   { key: "Permissions-Policy", value: "microphone=(self), camera=(), geolocation=()" },

@@ -41,6 +41,7 @@ export type Database = {
           summary: string | null
           tenant_id: string
           title: string | null
+          transcript: Json
           updated_at: string
           vehicles: number | null
         }
@@ -67,6 +68,7 @@ export type Database = {
           summary?: string | null
           tenant_id: string
           title?: string | null
+          transcript?: Json
           updated_at?: string
           vehicles?: number | null
         }
@@ -93,6 +95,7 @@ export type Database = {
           summary?: string | null
           tenant_id?: string
           title?: string | null
+          transcript?: Json
           updated_at?: string
           vehicles?: number | null
         }
@@ -337,7 +340,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      call_result: { Args: { p_conversation_id: string }; Returns: Json }
     }
     Enums: {
       lead_status: "new" | "contacted" | "closed"
