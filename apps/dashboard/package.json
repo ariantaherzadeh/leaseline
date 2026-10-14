@@ -12,20 +12,20 @@
   "dependencies": {
     "@leaseline/shared": "*",
     "@supabase/ssr": "0.12.7",
-    "@supabase/supabase-js": "2.117.2",
-    "next": "16.3.8",
+    "@supabase/supabase-js": "2.117.3",
+    "next": "16.4.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "server-only": "^0.0.1",
-    "zod": "4.6.5"
+    "zod": "4.6.6"
   },
   "devDependencies": {
-    "@netlify/plugin-nextjs": "^5.16.1",
-    "@types/node": "^22.20.4",
+    "@netlify/plugin-nextjs": "^5.16.2",
+    "@types/node": "^22.20.5",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.3.8",
+    "eslint-config-next": "16.4.0",
     "typescript": "^5"
   },
   "engines": {
