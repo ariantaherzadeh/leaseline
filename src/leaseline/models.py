@@ -8,10 +8,13 @@ Any fact that isn't confirmed is written as the literal string ``TBD``. The agen
 "not confirmed, offer a follow-up" and never guesses.
 """
 
+import re
 from datetime import date
 from typing import Annotated, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, HttpUrl, field_validator
+
+_DOMAIN = re.compile(r"(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z]{2,}(?::\d{1,5})?")
 
 TBD = "TBD"
 Tbd = Literal["TBD"]
@@ -108,4 +111,8 @@ class Tenant(_Strict):
         for d in domains:
             if "://" in d or "/" in d:
                 raise ValueError(f"domain must be a bare hostname, got {d!r}")
+            # ElevenLabs' allowlist only accepts a domain with an optional port: "localhost" is
+            # rejected, and one bad entry blocks saving the agent in the ElevenLabs dashboard.
+            if not _DOMAIN.fullmatch(d):
+                raise ValueError(f"domain must look like example.com (optional :port), got {d!r}")
         return domains

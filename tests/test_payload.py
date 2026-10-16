@@ -34,7 +34,6 @@ def test_agent_is_public_but_domain_locked(payloads: tuple[dict, dict]) -> None:
         {"hostname": "tryleaseline.com"},
         {"hostname": "www.tryleaseline.com"},
         {"hostname": "leaseline.netlify.app"},
-        {"hostname": "localhost"},
     ]
 
 
