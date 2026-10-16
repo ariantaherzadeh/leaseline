@@ -4,7 +4,7 @@ import pytest
 from elevenlabs.types import AgentPlatformSettingsRequestModel, ConversationalConfig
 
 from leaseline.loader import validate_tenant
-from leaseline.payload import conversation_config, platform_settings
+from leaseline.payload import agent_name, conversation_config, platform_settings
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
@@ -74,3 +74,9 @@ def test_widget_is_branded_for_the_persona(payloads: tuple[dict, dict]) -> None:
     widget = platform["widget"]
     assert widget["text_contents"]["main_label"] == "Talk to Nora"
     assert widget["avatar"] == {"type": "orb", "color_1": "#1554D6", "color_2": "#8DB0F7"}
+
+
+def test_agent_name_defaults_to_slug_and_can_be_set() -> None:
+    tenant = validate_tenant(REPO_ROOT / "tests" / "fixtures" / "tenants" / "demo").tenant
+    assert agent_name(tenant.model_copy(update={"agent_name": None})) == "LeaseLine · demo"
+    assert agent_name(tenant.model_copy(update={"agent_name": "LeaseLine"})) == "LeaseLine"

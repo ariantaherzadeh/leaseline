@@ -21,7 +21,7 @@ END_CALL_TOOL = {
 
 
 def agent_name(tenant: Tenant) -> str:
-    return f"LeaseLine · {tenant.slug}"
+    return tenant.agent_name or f"LeaseLine · {tenant.slug}"
 
 
 def agent_tags(tenant: Tenant) -> list[str]:
