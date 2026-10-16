@@ -131,9 +131,22 @@ def test_templates_are_skipped_and_empty_tenant_errors(tmp_path: Path) -> None:
 def test_bad_domain_is_rejected(tmp_path: Path) -> None:
     tenant_dir = make_tenant(tmp_path)
     path = tenant_dir / "tenant.yaml"
-    path.write_text(path.read_text().replace("- localhost", "- https://localhost"))
+    path.write_text(path.read_text().replace("- your-site", "- https://your-site"))
     report = validate_tenant(tenant_dir)
     assert any("bare hostname" in e for e in report.errors)
+
+
+def test_localhost_is_rejected(tmp_path: Path) -> None:
+    # ElevenLabs refuses it, and one bad allowlist entry blocks saving the agent in its dashboard.
+    tenant_dir = make_tenant(tmp_path)
+    path = tenant_dir / "tenant.yaml"
+    path.write_text(
+        path.read_text().replace(
+            "- your-site.netlify.app", "- your-site.netlify.app\n  - localhost"
+        )
+    )
+    report = validate_tenant(tenant_dir)
+    assert any("example.com" in e for e in report.errors)
 
 
 # --- CLI -------------------------------------------------------------------------------------

@@ -16,6 +16,5 @@ brand:
 
 domains: # bare hostnames allowed to embed the agent; the first is the primary domain
   - your-site.netlify.app
-  - localhost
 
 follow_up: Someone from the leasing team will reach out within one business day.

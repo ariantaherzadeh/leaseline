@@ -18,6 +18,5 @@ domains: # first entry is the primary (canonical) domain
   - tryleaseline.com
   - www.tryleaseline.com
   - leaseline.netlify.app
-  - localhost
 
 follow_up: Someone from the leasing team will reach out within one business day.
