@@ -99,6 +99,9 @@ class Brand(_Strict):
 class Tenant(_Strict):
     slug: Slug
     agent_id: str | None = None
+    agent_name: str | None = Field(
+        default=None, description='Name shown in ElevenLabs; defaults to "LeaseLine · <slug>".'
+    )
     team: Team
     persona: Persona
     brand: Brand
